@@ -1,14 +1,14 @@
 # Contributor: xaiviax (xaiviax at comcast dot net)
 # Maintainer: Dave Reisner (d at falconindy dot com)
 pkgname=deluge-svn
-pkgver=5978
+pkgver=6035
 pkgrel=1
 pkgdesc="A bittorrent client written with python and pygtk"
 arch=('i686' 'x86_64')
 url="http://deluge-torrent.org/"
 license=('GPL2')
-depends=('pygtk' 'boost' 'pyxdg' 'dbus-python' 'librsvg' 'desktop-file-utils' 'python-mako'
-         'hicolor-icon-theme' 'setuptools' 'patch' 'pyopenssl' 'twisted' 'python-chardet')
+depends=('pygtk' 'boost' 'pyxdg' 'librsvg' 'desktop-file-utils' 'python-mako' 'patch'
+         'hicolor-icon-theme' 'setuptools' 'pyopenssl' 'twisted' 'python-chardet')
 makedepends=('subversion' 'intltool')
 optdepends=('libtorrent-rasterbar-deluge: alternative to provided libtorrent')
 conflicts=('deluge')
