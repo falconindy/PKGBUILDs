@@ -156,7 +156,7 @@ build() {
   cd ${pkgdir}/lib/modules/${_kernver} && \
     (rm -f source build; ln -sf ../../../usr/src/linux-${_kernver} build)
   # install fallback mkinitcpio.conf file and preset file for kernel
-  install -m644 -D ${srcdir}/kernel26.preset ${pkgdir}/etc/mkinitcpio.d/${pkgname}.preset || return 1
+  install -m644 -D ${srcdir}/${pkgname}.preset ${pkgdir}/etc/mkinitcpio.d/${pkgname}.preset || return 1
   # set correct depmod command for install
   sed \
     -e  "s/KERNEL_NAME=.*/KERNEL_NAME=${_kernelname}/g" \
