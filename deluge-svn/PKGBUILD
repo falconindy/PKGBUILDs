@@ -10,7 +10,7 @@ license=('GPL2')
 depends=('pygtk' 'boost' 'pyxdg' 'librsvg' 'desktop-file-utils' 'python-mako' 'patch'
          'hicolor-icon-theme' 'setuptools' 'pyopenssl' 'twisted' 'python-chardet')
 makedepends=('subversion' 'intltool')
-optdepends=('libtorrent-rasterbar-deluge: alternative to provided libtorrent')
+optdepends=('libtorrent-rasterbar: alternative to provided libtorrent')
 conflicts=('deluge')
 provides=('deluge')
 options=('!emptydirs')
