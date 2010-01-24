@@ -1,9 +1,7 @@
-# $Id: PKGBUILD 63867 2010-01-18 22:59:03Z tpowa $
-# Maintainer: Tobias Powalowski <tpowa@archlinux.org>
-# Maintainer: Thomas Baechler <thomas@archlinux.org>
+# Source Maintainer: Tobias Powalowski <tpowa@archlinux.org>
+# Modified by: Dave Reisner (d@falconindy.com)
 pkgbase="kernel26-ckzero"
 pkgname=('kernel26-ckzero' 'kernel26-ckzero-headers') # Build stock -ARCH kernel
-# pkgname=kernel26-custom       # Build kernel with a different name
 _kernelname=${pkgname#kernel26}
 _basekernel=2.6.32
 pkgver=${_basekernel}.5
@@ -30,6 +28,7 @@ build() {
   # Fetch latest aufs2 git tree
   git clone http://git.c3sl.ufpr.br/pub/scm/aufs/aufs2-standalone.git aufs2.git
   cd aufs2.git
+  # This is no good for the latest RC of the kernel, since master handles that
   git checkout origin/aufs2-${kern//*.} -b aufs2-${kern//*.}
 
   cd ${srcdir}/linux-$_basekernel
