@@ -1,4 +1,5 @@
-# mkinitcpio preset file for kernel26
+# mkinitcpio preset file for kernel26-ckzero
+# This is actually bogus for the current config as it doesn't use a boot image
 
 ########################################
 # DO NOT EDIT THIS LINE:
