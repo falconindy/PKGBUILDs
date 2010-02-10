@@ -4,7 +4,7 @@ pkgbase="kernel26-ckzero"
 pkgname=('kernel26-ckzero' 'kernel26-ckzero-headers') # Build stock -ARCH kernel
 _kernelname=${pkgname#kernel26}
 _basekernel=2.6.32
-pkgver=${_basekernel}.5
+pkgver=${_basekernel}.8
 pkgrel=1
 _patchname="patch-${pkgver}-${pkgrel}-ARCH"
 _ckpatchversion=2
@@ -18,7 +18,7 @@ source=(ftp://ftp.kernel.org/pub/linux/kernel/v2.6/linux-$_basekernel.tar.bz2
         http://www.kernel.org/pub/linux/kernel/people/ck/patches/2.6/${_basekernel}/${_basekernel}-ck${_ckpatchversion}/${_ckpatchname}.bz2
         kernel26-ckzero.preset)
 md5sums=('260551284ac224c3a43c4adac7df4879'
-         '1def83990baf904bb02f7971eca66fd7'
+         '908f38fc5ba77b9bf691ae83e501b8e4'
          '5c91374d56f115ba4324978d5b002711'
          'daec85e914edab8c21af4a8f643c4b60'
          '6f2a3bd2d54c2c33548b97980e09d7e3')
@@ -29,7 +29,7 @@ build() {
   git clone http://git.c3sl.ufpr.br/pub/scm/aufs/aufs2-standalone.git aufs2.git
   cd aufs2.git
   # This is no good for the latest RC of the kernel, since master handles that
-  git checkout origin/aufs2-${kern//*.} -b aufs2-${kern//*.}
+  git checkout origin/aufs2-${_basekernel//*.} -b aufs2-${_basekernel//*.}
 
   cd ${srcdir}/linux-$_basekernel
   # Add -ARCH patches
@@ -90,7 +90,7 @@ package_kernel26-ckzero() {
   sed \
     -e  "s/KERNEL_NAME=.*/KERNEL_NAME=${_kernelname}/g" \
     -e  "s/KERNEL_VERSION=.*/KERNEL_VERSION=${_kernver}/g" \
-    -i $startdir/kernel26.install
+    -i $startdir/kernel26-ckzero.install
   sed \
     -e "s|source .*|source /etc/mkinitcpio.d/kernel26${_kernelname}.kver|g" \
     -e "s|default_image=.*|default_image=\"/boot/${pkgname}.img\"|g" \
