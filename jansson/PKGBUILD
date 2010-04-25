@@ -1,0 +1,25 @@
+# Contributor: Dave Reisner <d@falconindy.com>
+
+pkgname=jansson
+pkgver=1.2.1
+pkgrel=2
+pkgdesc="Jansson is a C library for encoding, decoding and manipulating JSON data"
+arch=('i686' 'x86_64')
+url="http://www.digip.org/jansson/"
+license=('MIT')
+source=("${url}/releases/${pkgname}-${pkgver}.tar.bz2")
+md5sums=('4e1ac8078fa43fe1ed55eab60021834a')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  ./configure --prefix=/usr
+  make || return 1
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make DESTDIR="$pkgdir/" install
+}
+
+# vim:set ts=2 sw=2 et:
