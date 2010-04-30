@@ -5,7 +5,7 @@ pkgbase="kernel26-ckzero"
 pkgname=('kernel26-ckzero' 'kernel26-ckzero-headers') # Build stock -ARCH kernel
 _kernelname=${pkgname#kernel26}
 _basekernel=2.6.33
-pkgver=${_basekernel}
+pkgver=${_basekernel}.3
 pkgrel=1
 _patchname="patch-${pkgver}-${pkgrel}-ARCH"
 _ckpatchver=ck1
@@ -14,39 +14,26 @@ license=('GPL2')
 url="http://www.kernel.org"
 source=(ftp://ftp.kernel.org/pub/linux/kernel/v2.6/linux-$_basekernel.tar.bz2
         ftp://ftp.archlinux.org/other/kernel26/${_patchname}.bz2
-        http://www.kernel.org/pub/linux/kernel/people/ck/patches/2.6/${_basekernel}/${_basekernel}-${_ckpatchver}/patch-2.6.33-${_ckpatchver}.bz2
-        # the main kernel config files
+        http://www.kernel.org/pub/linux/kernel/people/ck/patches/2.6/${_basekernel}/${_basekernel}-${_ckpatchver}/patch-${_basekernel}-${_ckpatchver}.bz2
         config.x86_64
-        # standard config files for mkinitcpio ramdisk
         kernel26-ckzero.preset)
 md5sums=('c3883760b18d50e8d78819c54d579b00'
-         'a1547093735c76bae832b14a583551b2'
+         'd8099303d993f803dce587bab314d81a'
          '0810e11f38b9e6e99c41286ee67dd237'
          '5c91374d56f115ba4324978d5b002711'
          '7b9b86c25588b4a5fe9e4ceeed17d8ec')
 
 build() {
-  cd ${srcdir}
-
-  # Prepare aufs2
-  git clone http://git.c3sl.ufpr.br/pub/scm/aufs/aufs2-standalone.git aufs2
-  cd aufs2
-  git checkout origin/aufs2 -b aufs2
-
   cd ${srcdir}/linux-${_basekernel}
 
   # Add Arch's patches
   patch -Np1 < ${srcdir}/${_patchname} || return 1
 
-  # Add -ck patchset (and override the EXTRAVERSION)
+  # Add -ck patchset (and remove the EXTRAVERSION)
+  sed -i '/EXTRAVERSION/d' ${srcdir}/patch-${_basekernel}-${_ckpatchver} 
   patch -Np1 < ${srcdir}/patch-${_basekernel}-${_ckpatchver}
-  sed -i -e 's|EXTRAVERSION = -ck1|EXTRAVERSION =|' Makefile
 
-  # Add aufs-kbuild
-  patch -Np1 < ${srcdir}/aufs2/aufs2-kbuild.patch
-  cp -rl ${srcdir}/aufs2/{Documentation,fs,include} ./
-
-  # Config choices (pick 1 and only 1)
+  # Config choices (current OR arch vanilla)
   # cat ../config.x86_64 >./.config
   zcat /proc/config.gz >./.config
 
@@ -66,7 +53,6 @@ build() {
 
 package_kernel26-ckzero() {
   pkgdesc="The Linux Kernel and modules"
-  groups=('base')
   backup=(etc/mkinitcpio.d/${pkgname}.preset)
   depends=('coreutils' 'kernel26-firmware>=2.6.32' 'module-init-tools' 'mkinitcpio>=0.5.20')
   replaces=('kernel24' 'kernel24-scsi' 'kernel26-scsi'
@@ -200,4 +186,3 @@ package_kernel26-ckzero-headers() {
   # remove unneeded architectures
   rm -rf ${pkgdir}/usr/src/linux-${_kernver}/arch/{alpha,arm,arm26,avr32,blackfin,cris,frv,h8300,ia64,m32r,m68k,m68knommu,mips,microblaze,mn10300,parisc,powerpc,ppc,s390,sh,sh64,sparc,sparc64,um,v850,xtensa}
 }
-
