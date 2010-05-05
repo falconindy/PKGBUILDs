@@ -1,14 +1,17 @@
-# Contributor: Your Name <youremail@domain.com>
+# Contributor: Dave Reisner <d@falconindy.com>
 pkgname=systemd-git
-pkgver=20100501
-pkgrel=1
+pkgver=20100505
+pkgrel=2
 pkgdesc="systems Session and Startup manager"
 arch=('i686' 'x86_64')
 url="http://0pointer.de/blog/projects/systemd.html"
 license=('GPL')
-depends=('libgee' 'libcgroup-git')
-makedepends=('git' 'vala')
+depends=('dbus-glib' 'gtk2' 'libcgroup-git' 'udev')
+makedepends=('git' 'libgee' 'vala')
+provides=('sysvinit')
 backup=('etc/dbus-1/systemd/org.freedesktop.systemd1.conf')
+source=('with-distro-arch.patch')
+md5sums=('f9c804da96723a5847f4aa7e286f1adc')
 
 _gitroot="git://git.0pointer.de/systemd.git"
 _gitname="systemd"
@@ -31,11 +34,15 @@ build() {
   git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
   cd "$srcdir/$_gitname-build"
 
-  ./bootstrap.sh --prefix=/usr --with-distro=none || return 1
+  patch -Np1 < "$srcdir/with-distro-arch.patch"
+  ./bootstrap.sh --prefix=/usr --libexecdir=/usr/lib || return 1
+
   make || return 1
 }
 
 package() {
   cd "$srcdir/$_gitname-build"
   make DESTDIR="$pkgdir" install || return 1
+  cd "$pkgdir"
+  mkdir -p cgroup/{debug,cpuset,ns,cpu,cpuacct,memory,devices,freezer}
 }
