@@ -1,31 +1,34 @@
-# Contributor: Dave Reisner <d@falconindy.com>
-
+# Maintainer: Dave Reisner <d@falconindy.com>
 pkgname=cower
-pkgver=1.3
-pkgrel=4
+pkgver=1.4
+pkgrel=1
 pkgdesc="A simple AUR agent with a pretentious name."
 arch=('i686' 'x86_64')
 url="http://github.com/falconindy/cower"
 license=('GPL')
 makedepends=('git')
 
-gitroot="http://github.com/falconindy/cower.git"
-gitname="cower"
+__gitroot="http://github.com/falconindy/cower.git"
+__gitname="cower"
 
 build() {
   cd "$srcdir"
   msg "Connecting to GIT server...."
 
-  if [ ! -d $gitname ] ; then
-    git clone $gitroot $gitname
-    cd $gitname
+  if [ -d $__gitname ] ; then
+    cd $__gitname && git pull origin
+    msg "The local files are updated"
   else
-    cd $gitname
-    git fetch origin tag $pkgver
+    git clone $__gitroot $__gitname
   fi
 
   msg "GIT checkout done or server timeout"
   msg "Starting make..."
+
+  rm -rf "$srcdir/$__gitname-build"
+  git clone "$srcdir/$__gitname" "$srcdir/$__gitname-build"
+  cd "$srcdir/$__gitname-build"
+  git checkout $pkgver -b $pkgver
 
   make || return 1
 }
@@ -33,8 +36,8 @@ build() {
 package() {
   depends=('curl' 'jansson' 'pacman')
 
-  cd "$srcdir/$gitname"
-  make DESTDIR=${pkgdir} install
+  cd "$srcdir/$__gitname-build"
+  make DESTDIR=${pkgdir} MANPREFIX=/usr/share/man install
 
 }
 
