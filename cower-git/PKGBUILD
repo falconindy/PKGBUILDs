@@ -1,15 +1,13 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
 pkgname=cower-git
-pkgver=20100425
-pkgrel=2
+pkgver=201005015
+pkgrel=1
 pkgdesc="A simple AUR agent with a pretentious name"
 arch=('i686' 'x86_64')
 url="http://github.com/falconindy/cower"
 license=('GPL')
-makedepends=('git' 'jansson')
-conflicts=('cower')
-provides=('cower')
+makedepends=('curl' 'git' 'jansson' 'pacman')
 
 _gitroot="git://github.com/falconindy/cower.git"
 _gitname="cower"
@@ -37,6 +35,8 @@ build() {
 
 package() {
   depends=('curl' 'jansson' 'pacman')
+  conflicts=('cower')
+  provides=('cower')
 
   cd "$srcdir/$_gitname-build"
   make DESTDIR=${pkgdir} install
