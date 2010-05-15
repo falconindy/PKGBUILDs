@@ -1,0 +1,46 @@
+# Contributor: Dave Reisner <d@falconindy.com>
+
+pkgname=burp
+pkgver=1.1
+pkgrel=1
+pkgdesc="A simple AUR uploader"
+arch=('i686' 'x86_64')
+url="http://github.com/falconindy/burp"
+license=('GPL')
+makedepends=('git' 'curl')
+
+__gitroot="http://github.com/falconindy/burp.git"
+__gitname="burp"
+
+build() {
+  cd "$srcdir"
+  msg "Connecting to GIT server...."
+
+  if [ -d $__gitname ] ; then
+    cd $__gitname && git pull origin
+    msg "The local files are updated"
+  else
+    git clone $__gitroot $__gitname
+  fi
+
+  msg "GIT checkout done or server timeout"
+  msg "Starting make..."
+
+  rm -rf "$srcdir/$__gitname-build"
+  git clone "$srcdir/$__gitname" "$srcdir/$__gitname-build"
+  cd "$srcdir/$__gitname-build"
+  git checkout $pkgver -b $pkgver
+
+  make || return 1
+}
+
+package() {
+  depends=('curl')
+  conflicts=('burp-git')
+
+  cd "$srcdir/$__gitname-build"
+  make DESTDIR=${pkgdir} MANPREFIX=/usr/share/man install
+
+}
+
+# vim: ft=sh syn=sh
