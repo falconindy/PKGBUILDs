@@ -1,4 +1,5 @@
-# Maintainer: Dave Reisner <d@falconindy.com>
+# Contributor: Dave Reisner <d@falconindy.com>
+
 pkgname=burp-git
 pkgver=20100514
 pkgrel=1

@@ -1,12 +1,13 @@
 # Contributor: Dave Reisner <d@falconindy.com>
+
 pkgname=cower-git
 pkgver=20100425
-pkgrel=1
+pkgrel=2
 pkgdesc="A simple AUR agent with a pretentious name"
 arch=('i686' 'x86_64')
 url="http://github.com/falconindy/cower"
 license=('GPL')
-makedepends=('git')
+makedepends=('git' 'jansson')
 conflicts=('cower')
 provides=('cower')
 
