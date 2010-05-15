@@ -2,12 +2,12 @@
 
 pkgname=cower
 pkgver=1.4
-pkgrel=2
+pkgrel=3
 pkgdesc="A simple AUR agent with a pretentious name."
 arch=('i686' 'x86_64')
 url="http://github.com/falconindy/cower"
 license=('GPL')
-makedepends=('git' 'jansson')
+makedepends=('git' 'jansson' 'pacman')
 
 __gitroot="http://github.com/falconindy/cower.git"
 __gitname="cower"
@@ -36,6 +36,7 @@ build() {
 
 package() {
   depends=('curl' 'jansson' 'pacman')
+  conflicts=('cower-git')
 
   cd "$srcdir/$__gitname-build"
   make DESTDIR=${pkgdir} MANPREFIX=/usr/share/man install
