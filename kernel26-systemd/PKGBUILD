@@ -1,14 +1,14 @@
-# Maintainer: Dave Reisner <d@falconindy.com>
+# Contributor: Dave Reisner <d@falconindy.com>
 pkgname='kernel26-systemd'
 _kernelname=${pkgname#kernel26}
-_basekernel=2.6.33
+_basekernel=2.6.34
 url="http://www.kernel.org"
-pkgver=${_basekernel}.3
-pkgrel=2
+pkgver=${_basekernel}
+pkgrel=1
 _patchname="patch-${pkgver}-${pkgrel}-ARCH"
 arch=(i686 x86_64)
 license=('GPL2')
-pkgdesc="The Linux Kernel and modules, with extra config options for systemd"
+pkgdesc="The Linux Kernel and modules, with minor modifications for systemd"
 groups=('base')
 backup=(etc/mkinitcpio.d/${pkgname}.preset)
 depends=('coreutils' 'kernel26-firmware>=2.6.32' 'module-init-tools' 'mkinitcpio>=0.5.20')
@@ -28,10 +28,10 @@ source=(ftp://ftp.kernel.org/pub/linux/kernel/v2.6/linux-$_basekernel.tar.bz2
         config config.x86_64
         # standard config files for mkinitcpio ramdisk
         kernel26-systemd.preset)
-md5sums=('c3883760b18d50e8d78819c54d579b00'
-         'd51b35e5cb37834f87c0eacfe6148a58'
-         'f530797979658179fd91d01653447f46'
-         '98044516683f802d9edcc5bf7cd4145a'
+md5sums=('10eebcb0178fb4540e2165bfd7efc7ad'
+         '84c3297451b709a0ed97b40b2fca6fc5'
+         'efbcb6509809815de592cde954d388cc'
+         'b0c6c49f28852a8d580e20c000370eb7'
          'af2235641e632e433cc98084b25681a2')
 
 build() {
@@ -192,8 +192,3 @@ package() {
   # remove unneeded architectures
   rm -rf ${pkgdir}/usr/src/linux-${_kernver}/arch/{alpha,arm,arm26,avr32,blackfin,cris,frv,h8300,ia64,m32r,m68k,m68knommu,mips,microblaze,mn10300,parisc,powerpc,ppc,s390,sh,sh64,sparc,sparc64,um,v850,xtensa}
 }
-md5sums=('c3883760b18d50e8d78819c54d579b00'
-         'd51b35e5cb37834f87c0eacfe6148a58'
-         '2d68a9a609bd4956993b94d5a2e79332'
-         '7821e297f8d9bfcc9e4736de77ee7b25'
-         'af2235641e632e433cc98084b25681a2')
