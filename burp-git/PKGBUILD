@@ -1,7 +1,7 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
 pkgname=burp-git
-pkgver=20100514
+pkgver=20100517
 pkgrel=1
 pkgdesc="A simple AUR uploader"
 arch=('i686' 'x86_64')
@@ -27,7 +27,7 @@ build() {
   msg "Starting make..."
 
   rm -rf "$srcdir/$_gitname-build"
-  git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
+  cp -r "$srcdir/$_gitname" "$srcdir/$_gitname-build"
 
   cd "$srcdir/$_gitname-build"
   make
