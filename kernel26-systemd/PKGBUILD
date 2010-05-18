@@ -30,8 +30,8 @@ source=(ftp://ftp.kernel.org/pub/linux/kernel/v2.6/linux-$_basekernel.tar.bz2
         kernel26-systemd.preset)
 md5sums=('10eebcb0178fb4540e2165bfd7efc7ad'
          '84c3297451b709a0ed97b40b2fca6fc5'
-         'efbcb6509809815de592cde954d388cc'
-         'b0c6c49f28852a8d580e20c000370eb7'
+         '9ce517c572da269be4f67176f0a313e7'
+         '8209e3e8cd950511282bc08bf6424dfb'
          'af2235641e632e433cc98084b25681a2')
 
 build() {
