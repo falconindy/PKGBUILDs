@@ -1,13 +1,13 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
 pkgname=cower-git
-pkgver=20100516
-pkgrel=1
+pkgver=20100520
+pkgrel=2
 pkgdesc="A simple AUR agent with a pretentious name"
 arch=('i686' 'x86_64')
 url="http://github.com/falconindy/cower"
 license=('GPL')
-makedepends=('curl' 'git' 'jansson' 'pacman')
+makedepends=('curl' 'git' 'yajl' 'pacman')
 
 _gitroot="git://github.com/falconindy/cower.git"
 _gitname="cower"
@@ -27,19 +27,19 @@ build() {
   msg "Starting make..."
 
   rm -rf "$srcdir/$_gitname-build"
-  git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
+  cp -r "$srcdir/$_gitname" "$srcdir/$_gitname-build"
   cd "$srcdir/$_gitname-build"
 
   make || return 1
 }
 
 package() {
-  depends=('curl' 'jansson' 'pacman')
+  depends=('curl' 'yajl' 'pacman')
   conflicts=('cower')
   provides=('cower')
 
   cd "$srcdir/$_gitname-build"
-  make DESTDIR=${pkgdir} install
+  make PREFIX=/usr DESTDIR=${pkgdir} install
 }
 
 # vim: ft=sh syn=sh
