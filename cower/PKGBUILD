@@ -1,46 +1,30 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
 pkgname=cower
-pkgver=1.4
-pkgrel=3
+pkgver=2.1
+pkgrel=2
 pkgdesc="A simple AUR agent with a pretentious name."
 arch=('i686' 'x86_64')
 url="http://github.com/falconindy/cower"
 license=('GPL')
-makedepends=('git' 'jansson' 'pacman')
-
-__gitroot="http://github.com/falconindy/cower.git"
-__gitname="cower"
+makedepends=('yajl' 'pacman')
+source=("http://github.com/downloads/falconindy/$pkgname/$pkgname-$pkgver.tar.gz"
+        "escape-pkg-names.patch")
+md5sums=('e9b858e78faa24e739c65f5d8ea6bb15'
+         '7048c43aec1608da3859ad5581b427fa')
 
 build() {
-  cd "$srcdir"
-  msg "Connecting to GIT server...."
-
-  if [ -d $__gitname ] ; then
-    cd $__gitname && git pull origin
-    msg "The local files are updated"
-  else
-    git clone $__gitroot $__gitname
-  fi
-
-  msg "GIT checkout done or server timeout"
-  msg "Starting make..."
-
-  rm -rf "$srcdir/$__gitname-build"
-  git clone "$srcdir/$__gitname" "$srcdir/$__gitname-build"
-  cd "$srcdir/$__gitname-build"
-  git checkout $pkgver -b $pkgver
-
-  make || return 1
+  cd "$srcdir/$pkgname-$pkgver"
+  patch -Np1 < "$srcdir/escape-pkg-names.patch"
+  make PREFIX=/usr || return 1
 }
 
 package() {
-  depends=('curl' 'jansson' 'pacman')
+  depends=('curl' 'yajl' 'pacman')
   conflicts=('cower-git')
 
-  cd "$srcdir/$__gitname-build"
-  make DESTDIR=${pkgdir} MANPREFIX=/usr/share/man install
-
+  cd "$srcdir/$pkgname-$pkgver"
+  make DESTDIR=${pkgdir} PREFIX=/usr install
 }
 
 # vim: ft=sh syn=sh

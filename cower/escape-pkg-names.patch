@@ -1,0 +1,75 @@
+diff --git a/download.c b/download.c
+index d36b1fb..418990f 100644
+--- a/download.c
++++ b/download.c
+@@ -42,7 +42,7 @@ int aur_get_tarball(struct aur_pkg_t *aurpkg) {
+ 
+   FILE *fd;
+   const char *filename, *pkgname;
+-  char *dir;
++  char *dir, *escaped;
+   char fullpath[PATH_MAX + 1], url[AUR_URL_SIZE + 1];
+   CURLcode curlstat;
+   long httpcode;
+@@ -66,6 +66,7 @@ int aur_get_tarball(struct aur_pkg_t *aurpkg) {
+ 
+   pkgname = aurpkg->name;
+ 
++  escaped = curl_easy_escape(curl, pkgname, strlen(pkgname));
+   snprintf(url, AUR_URL_SIZE, AUR_PKG_URL, pkgname, pkgname);
+ 
+   if (config->verbose >= 2)
+@@ -143,6 +144,7 @@ int aur_get_tarball(struct aur_pkg_t *aurpkg) {
+   }
+ 
+ cleanup:
++  curl_free(escaped);
+   FREE(dir);
+   return result;
+ }
+diff --git a/search.c b/search.c
+index fcf048f..77c498d 100644
+--- a/search.c
++++ b/search.c
+@@ -22,6 +22,7 @@
+ #include "aur.h"
+ #include "download.h"
+ #include "conf.h"
++#include "curl.h"
+ #include "search.h"
+ #include "util.h"
+ #include "yajl.h"
+@@ -37,11 +38,19 @@
+ alpm_list_t *aur_rpc_query(const char *query_type, const char* arg) {
+ 
+   char url[AUR_URL_SIZE];
++  char *escaped;
++  alpm_list_t *ret;
++
++  escaped = curl_easy_escape(curl, arg, strlen(arg));
+ 
+   /* Format URL to pass to curl */
+-  snprintf(url, AUR_URL_SIZE, AUR_RPC_URL, query_type, arg);
++  snprintf(url, AUR_URL_SIZE, AUR_RPC_URL, query_type, escaped);
++
++  ret = aur_fetch_json(url);
++
++  curl_free(escaped);
+ 
+-  return aur_fetch_json(url); /* This needs to be freed in the calling function */
++  return ret; /* This needs to be freed in the calling function */
+ }
+ 
+ alpm_list_t *cower_do_query(alpm_list_t *targets, const char *type) {
+diff --git a/yajl.c b/yajl.c
+index 523a7d8..8583748 100644
+--- a/yajl.c
++++ b/yajl.c
+@@ -133,7 +133,6 @@ alpm_list_t *aur_fetch_json(const char *url) {
+ 
+ cleanup:
+   yajl_parse_complete(hand);
+-
+   yajl_gen_free(g);
+   yajl_free(hand);
+ 
