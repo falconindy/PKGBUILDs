@@ -1,13 +1,13 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 pkgname=systemd-git
-pkgver=20100512
-pkgrel=1
+pkgver=20100524
+pkgrel=2
 pkgdesc="systems Session and Startup manager"
 arch=('i686' 'x86_64')
 url="http://www.freedesktop.org/wiki/Software/systemd"
 license=('GPL')
-depends=('dbus-core' 'dbus-glib' 'kernel26-systemd' 'glibc' 'libcgroup-git' 'udev' 'libcap')
-makedepends=('git' 'vala')
+depends=('dbus-core' 'dbus-glib' 'kernel26-systemd' 'glibc' 'libcgroup-git' 'udev>=154' 'libcap')
+makedepends=('git' 'vala' 'gtk2' 'docbook-xsl')
 optdepends=('gtk2: for systemadm GUI')
 provides=('sysvinit')
 
