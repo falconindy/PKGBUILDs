@@ -1,8 +1,8 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
 pkgname=cower-git
-pkgver=20100520
-pkgrel=2
+pkgver=20100521
+pkgrel=1
 pkgdesc="A simple AUR agent with a pretentious name"
 arch=('i686' 'x86_64')
 url="http://github.com/falconindy/cower"
@@ -30,7 +30,7 @@ build() {
   cp -r "$srcdir/$_gitname" "$srcdir/$_gitname-build"
   cd "$srcdir/$_gitname-build"
 
-  make || return 1
+  make PREFIX=/usr || return 1
 }
 
 package() {
