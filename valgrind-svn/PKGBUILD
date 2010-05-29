@@ -1,0 +1,51 @@
+# Contributor: Dave Reisner <d@falconindy.com>
+
+pkgname=valgrind-svn
+pkgver=11136
+pkgrel=1
+pkgdesc="A tool to help find memory-management problems in programs"
+arch=('i686' 'x86_64')
+url="http://valgrind.org/"
+license=('GPL')
+depends=('glibc>=2.12' 'glibc<2.13' 'perl')
+makedepends=('gdb')
+provides=('valgrind')
+conflicts=('valgrind')
+
+_svntrunk="svn://svn.valgrind.org/valgrind/trunk"
+_svnmod="valgrind"
+
+build() {
+
+  cd "$srcdir"
+
+  if [ -d $_svnmod/.svn ]; then
+    cd $_svnmod && svn up
+  else
+    svn co $_svntrunk $_svnmod
+  fi
+
+  msg "SVN checkout done or server timeout"
+  msg "Starting make..."
+
+  rm -rf "$_svnmod-build"
+  cp -r "$_svnmod" "${_svnmod}-build"
+  cd "${_svnmod}-build"
+
+  autoreconf
+
+  if [ "${CARCH}" = "x86_64" ]; then
+    ./configure --prefix=/usr --mandir=/usr/share/man --enable-only64bit || return 1
+  else
+    ./configure --prefix=/usr --mandir=/usr/share/man || return 1
+  fi
+
+  make || return 1
+}
+
+package() {
+  cd "$srcdir/${_svnmod}-build"
+  make DESTDIR=${pkgdir} install || return 1
+}
+
+# vim:set ts=2 sw=2 et:
