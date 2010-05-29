@@ -1,11 +1,10 @@
-# $Id: PKGBUILD 70563 2010-02-27 12:47:49Z tpowa $
-# Maintainer: Tobias Powalowski <tpowa@archlinux.org>
-# Maintainer: Thomas Baechler <thomas@archlinux.org>
+# Maintainer: Dave Reisner <d@falconindy.com>
+
 pkgbase="kernel26-ckzero"
-pkgname=('kernel26-ckzero' 'kernel26-ckzero-headers') # Build stock -ARCH kernel
+pkgname=('kernel26-ckzero' 'kernel26-ckzero-headers')
 _kernelname=${pkgname#kernel26}
-_basekernel=2.6.33
-pkgver=${_basekernel}.3
+_basekernel=2.6.34
+pkgver=${_basekernel}
 pkgrel=1
 _patchname="patch-${pkgver}-${pkgrel}-ARCH"
 _ckpatchver=ck1
@@ -17,11 +16,11 @@ source=(ftp://ftp.kernel.org/pub/linux/kernel/v2.6/linux-$_basekernel.tar.bz2
         http://www.kernel.org/pub/linux/kernel/people/ck/patches/2.6/${_basekernel}/${_basekernel}-${_ckpatchver}/patch-${_basekernel}-${_ckpatchver}.bz2
         config.x86_64
         kernel26-ckzero.preset)
-md5sums=('c3883760b18d50e8d78819c54d579b00'
-         'd8099303d993f803dce587bab314d81a'
-         '0810e11f38b9e6e99c41286ee67dd237'
-         '5c91374d56f115ba4324978d5b002711'
-         '7b9b86c25588b4a5fe9e4ceeed17d8ec')
+md5sums=('10eebcb0178fb4540e2165bfd7efc7ad'
+         '84c3297451b709a0ed97b40b2fca6fc5'
+         '9bda4490b5f689c302dfa33d8636ce43'
+         'f607fd92684db61ce91e6f8840bf2267'
+         '850d28ed09a3b2dba9efacfc6dbfd342')
 
 build() {
   cd ${srcdir}/linux-${_basekernel}
@@ -30,7 +29,7 @@ build() {
   patch -Np1 < ${srcdir}/${_patchname} || return 1
 
   # Add -ck patchset (and remove the EXTRAVERSION)
-  sed -i '/EXTRAVERSION/d' ${srcdir}/patch-${_basekernel}-${_ckpatchver} 
+  sed -i 's/\$(CKVERSION)//' ${srcdir}/patch-${_basekernel}-${_ckpatchver} 
   patch -Np1 < ${srcdir}/patch-${_basekernel}-${_ckpatchver}
 
   # Config choices (current OR arch vanilla)
