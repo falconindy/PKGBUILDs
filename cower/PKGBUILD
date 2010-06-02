@@ -1,27 +1,23 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
 pkgname=cower
-pkgver=2.1
-pkgrel=2
+pkgver=2.2
+pkgrel=1
 pkgdesc="A simple AUR agent with a pretentious name."
 arch=('i686' 'x86_64')
 url="http://github.com/falconindy/cower"
 license=('GPL')
 makedepends=('yajl' 'pacman')
-source=("http://github.com/downloads/falconindy/$pkgname/$pkgname-$pkgver.tar.gz"
-        "escape-pkg-names.patch")
-md5sums=('e9b858e78faa24e739c65f5d8ea6bb15'
-         '7048c43aec1608da3859ad5581b427fa')
+source=("http://github.com/downloads/falconindy/$pkgname/$pkgname-$pkgver.tar.gz")
+md5sums=('8ef1998e96b4990bdb05222883b509f9')
 
 build() {
   cd "$srcdir/$pkgname-$pkgver"
-  patch -Np1 < "$srcdir/escape-pkg-names.patch"
   make PREFIX=/usr || return 1
 }
 
 package() {
   depends=('curl' 'yajl' 'pacman')
-  conflicts=('cower-git')
 
   cd "$srcdir/$pkgname-$pkgver"
   make DESTDIR=${pkgdir} PREFIX=/usr install
