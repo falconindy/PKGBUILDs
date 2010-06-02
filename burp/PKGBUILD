@@ -2,7 +2,7 @@
 
 pkgname=burp
 pkgver=1.3.2
-pkgrel=1
+pkgrel=2
 pkgdesc="A simple AUR uploader"
 arch=('i686' 'x86_64')
 url="http://github.com/falconindy/burp"
@@ -20,7 +20,6 @@ package() {
   depends=('curl')
   conflicts=('burp-git')
 
-  cp "$srcdir/burp.bash_completion" "$srcdir/$pkgname-$pkgver/"
   cd $srcdir/$pkgname-$pkgver
   make PREFIX=/usr DESTDIR=${pkgdir} MANPREFIX=/usr/share/man install
 
