@@ -1,16 +1,12 @@
 # Contributor: Dave Reisner (d@falconindy.com)
 pkgname=squashfu-git
-pkgver=20100113
+pkgver=20100603
 pkgrel=1
 pkgdesc="An incremental backup solution using Aufs"
-arch=('i686l' 'x86_64')
+arch=('i686' 'x86_64')
 url="http://github.com/falconindy/SquashFu"
 license=('GPL')
-depends=('bash' 'aufs2' 'aufs2-util' 'squashfs-tools' 'rsync')
 makedepends=('git')
-provides=('squashfu')
-conflicts=('squashfu')
-backup=(etc/squashfu.conf)
 source=()
 md5sums=()
 
@@ -33,8 +29,15 @@ build() {
 
   rm -rf "$srcdir/$_gitname-build"
   git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
+} 
+
+package() {
+  depends=('bash' 'aufs2' 'aufs2-util' 'squashfs-tools' 'rsync')
+  provides=('squashfu')
+  backup=(etc/squashfu.conf)
+
   cd "$srcdir/$_gitname-build"
 
   install -D -m644 squashfu.conf ${pkgdir}/etc/squashfu.conf
   install -D -m755 squashfu ${pkgdir}/usr/bin/squashfu
-} 
+}
