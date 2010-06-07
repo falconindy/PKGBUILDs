@@ -1,7 +1,7 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
 pkgname=burp-git
-pkgver=20100517
+pkgver=20100607
 pkgrel=1
 pkgdesc="A simple AUR uploader"
 arch=('i686' 'x86_64')
@@ -35,6 +35,7 @@ build() {
 
 package() {
   depends=('curl')
+  provides=('burp')
 
   cd "$srcdir/$_gitname-build"
   make DESTDIR="$pkgdir" MANPREFIX=/usr/share/man install
