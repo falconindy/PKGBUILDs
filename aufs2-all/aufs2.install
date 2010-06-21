@@ -1,16 +1,13 @@
 post_install() {
-  KERNEL_VERSION=2.6.33-ckzero
-  depmod $KERNEL_VERSION
+  depmod -a
 }
 
 post_upgrade() {
-  KERNEL_VERSION=2.6.33-ckzero
-  depmod $KERNEL_VERSION
+  depmod -a
 }
 
 post_remove() {
-  KERNEL_VERSION=2.6.33-ckzero
-  depmod $KERNEL_VERSION
+  depmod -a
 }
 
 op=$1
