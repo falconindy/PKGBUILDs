@@ -1,5 +1,4 @@
 # Maintainer: Dave Reisner <d@falconindy.com>
-
 pkgbase="kernel26-ckzero"
 pkgname=('kernel26-ckzero' 'kernel26-ckzero-headers')
 _kernelname=${pkgname#kernel26}
@@ -14,13 +13,13 @@ url="http://www.kernel.org"
 source=(ftp://ftp.kernel.org/pub/linux/kernel/v2.6/linux-$_basekernel.tar.bz2
         ftp://ftp.archlinux.org/other/kernel26/${_patchname}.bz2
         http://www.kernel.org/pub/linux/kernel/people/ck/patches/2.6/${_basekernel}/${_basekernel}-${_ckpatchver}/patch-${_basekernel}-${_ckpatchver}.bz2
-        config.x86_64
+        config
         kernel26-ckzero.preset)
 md5sums=('10eebcb0178fb4540e2165bfd7efc7ad'
          '84c3297451b709a0ed97b40b2fca6fc5'
          '9bda4490b5f689c302dfa33d8636ce43'
-         'f607fd92684db61ce91e6f8840bf2267'
-         '850d28ed09a3b2dba9efacfc6dbfd342')
+         'd55c5895152a6ce686c397cac7495a5a'
+         '7b9b86c25588b4a5fe9e4ceeed17d8ec')
 
 build() {
   cd ${srcdir}/linux-${_basekernel}
@@ -28,17 +27,16 @@ build() {
   # Add Arch's patches
   patch -Np1 < ${srcdir}/${_patchname} || return 1
 
-  # Add -ck patchset (and remove the EXTRAVERSION)
-  sed -i 's/\$(CKVERSION)//' ${srcdir}/patch-${_basekernel}-${_ckpatchver} 
+  # Add -ck patchset (and remove the CKVERSION)
+  sed -i 's/+CKVERSION = .*/+CKVERSION = /' ${srcdir}/patch-${_basekernel}-${_ckpatchver} 
   patch -Np1 < ${srcdir}/patch-${_basekernel}-${_ckpatchver}
 
-  # Config choices (current OR arch vanilla)
-  # cat ../config.x86_64 >./.config
+  # Config choices (pick 1 and only 1)
+  #cat ../config >./.config
   zcat /proc/config.gz >./.config
 
-  if [ "${_kernelname}" != "" ]; then
-    sed -i "s|CONFIG_LOCALVERSION=.*|CONFIG_LOCALVERSION=\"${_kernelname}\"|g" ./.config
-  fi
+  [[ "${_kernelname}" != "" ]] && sed -i "s|CONFIG_LOCALVERSION=.*|CONFIG_LOCALVERSION=\"${_kernelname}\"|g" ./.config
+
   # get kernel version
   make prepare
   # load configuration
@@ -125,6 +123,9 @@ package_kernel26-ckzero-headers() {
   mkdir -p ${pkgdir}/usr/src/linux-${_kernver}/arch/$KARCH/kernel
 
   cp arch/$KARCH/Makefile ${pkgdir}/usr/src/linux-${_kernver}/arch/$KARCH/
+  if [ "$CARCH" = "i686" ]; then
+    cp arch/$KARCH/Makefile_32.cpu ${pkgdir}/usr/src/linux-${_kernver}/arch/$KARCH/
+  fi
   cp arch/$KARCH/kernel/asm-offsets.s ${pkgdir}/usr/src/linux-${_kernver}/arch/$KARCH/kernel/
 
   # add headers for lirc package
