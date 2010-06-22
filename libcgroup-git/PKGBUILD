@@ -1,7 +1,7 @@
 # Maintainer: Jan "heftig" Steffens <jan.steffens@student.kit.edu>
 
 pkgname=libcgroup-git
-pkgver=20100501
+pkgver=20100622
 pkgrel=1
 pkgdesc="Library that abstracts the control group file system in Linux"
 arch=(i686 x86_64)
@@ -40,7 +40,8 @@ build() {
   autoheader
   automake --foreign --add-missing --copy
 
-  ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var
+  ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var \
+              --enable-pam-module-dir=/lib/security
 
   make clean
   make
@@ -57,10 +58,6 @@ package() {
   install -Dm644 samples/cgrules.conf "$pkgdir/etc/cgrules.conf"
 
   cd "$pkgdir"
-
-  mkdir -p lib/security
-  mv usr/lib/pam_cgroup.so.*.*.* lib/security/pam_cgroup.so
-  rm -f usr/lib/pam_cgroup*
 
   rm -rf etc/rc.d
   install -Dm755 "$srcdir/cgred" etc/rc.d/cgred
