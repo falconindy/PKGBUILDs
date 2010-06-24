@@ -1,4 +1,4 @@
-# Maintainer: Jan "heftig" Steffens <jan.steffens@student.kit.edu>
+# Maintainer: Dave Reisner <d@falconindy.com>
 
 pkgname=libcgroup-git
 pkgver=20100622
