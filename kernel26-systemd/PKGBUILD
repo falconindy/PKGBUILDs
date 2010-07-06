@@ -1,9 +1,10 @@
 # Contributor: Dave Reisner <d@falconindy.com>
+
 pkgname='kernel26-systemd'
 _kernelname=${pkgname#kernel26}
 _basekernel=2.6.34
 url="http://www.kernel.org"
-pkgver=${_basekernel}
+pkgver=${_basekernel}.1
 pkgrel=1
 _patchname="patch-${pkgver}-${pkgrel}-ARCH"
 arch=(i686 x86_64)
@@ -29,7 +30,7 @@ source=(ftp://ftp.kernel.org/pub/linux/kernel/v2.6/linux-$_basekernel.tar.bz2
         # standard config files for mkinitcpio ramdisk
         kernel26-systemd.preset)
 md5sums=('10eebcb0178fb4540e2165bfd7efc7ad'
-         '84c3297451b709a0ed97b40b2fca6fc5'
+         '2fbd20a8a1387589b0cc8969851ba27c'
          '250f4950158cd651b56f57242c7b9329'
          'ec045c00541b49dfea13aaaf1a079c7d'
          'af2235641e632e433cc98084b25681a2')
@@ -192,3 +193,4 @@ package() {
   # remove unneeded architectures
   rm -rf ${pkgdir}/usr/src/linux-${_kernver}/arch/{alpha,arm,arm26,avr32,blackfin,cris,frv,h8300,ia64,m32r,m68k,m68knommu,mips,microblaze,mn10300,parisc,powerpc,ppc,s390,sh,sh64,sparc,sparc64,um,v850,xtensa}
 }
+
