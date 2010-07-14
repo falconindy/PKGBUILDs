@@ -1,16 +1,15 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 pkgname=systemd-git
-pkgver=20100622
+pkgver=20100713
 pkgrel=1
 pkgdesc="systems Session and Startup manager"
 arch=('i686' 'x86_64')
 url="http://www.freedesktop.org/wiki/Software/systemd"
 license=('GPL')
-depends=('dbus-core' 'dbus-glib' 'kernel26-systemd' 'glibc' 'libcgroup' 'udev>=154')
-makedepends=('git' 'libcap' 'vala' 'gtk2' 'docbook-xsl' 'pam' 'tcp_wrappers')
+depends=('dbus-git' 'dbus-glib' 'kernel26-systemd' 'glibc' 'libcgroup-git' 'udev>=160' 'libcap')
+makedepends=('docbook-xsl' 'git' 'gtk2' 'libxslt' 'vala')
 optdepends=('gtk2: for systemadm GUI')
-provides=('sysvinit')
-conflicts=('sysvinit')
+provides=('sysvinit' 'systemd')
 
 _gitroot="git://anongit.freedesktop.org/systemd"
 _gitname="systemd"
@@ -20,8 +19,8 @@ build() {
 
   msg "Connecting to GIT server...."
 
-  if [[ -d "$_gitname" ]] ; then
-    cd "$_gitname" && git pull origin
+  if [ -d $_gitname ] ; then
+    cd $_gitname && git pull origin
     msg "The local files are updated."
   else
     git clone $_gitroot $_gitname
@@ -34,21 +33,14 @@ build() {
   git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
   cd "$srcdir/$_gitname-build"
 
-  # If gtk2 is found on the system, the graphical utilities will be
-  # built. This can be explicitly disabled with --disable-gtk.
-  ./bootstrap.sh --prefix=/usr --libexecdir=/usr/lib
+  ./bootstrap.sh --prefix=/usr --libexecdir=/usr/lib || return 1
 
-  make
+  make || return 1
 }
 
 package() {
   cd "$srcdir/$_gitname-build"
-  make DESTDIR="$pkgdir" install
-
-  # make symlinks to classic sysvinit tools
-  mkdir "$pkgdir/sbin"
-  ln -s /bin/systemd "$pkgdir/sbin/init"
-  for exe in reboot halt poweroff shutdown telinit runlevel; do
-    ln -s "/bin/systemctl" "$pkgdir/sbin/$exe"
-  done
+  make DESTDIR="$pkgdir" install || return 1
+  cd "$pkgdir"
+  mkdir -p cgroup/{cpuset,ns,net_cls,cpu,cpuacct,memory,devices,freezer}
 }
