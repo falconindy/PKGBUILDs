@@ -1,7 +1,7 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
 pkgname=dbus-git
-pkgver=20100709
+pkgver=20100716
 pkgrel=1
 pkgdesc="Freedesktop.org message bus system"
 url="http://www.freedesktop.org/Software/dbus"
@@ -42,7 +42,8 @@ build() {
       --libexecdir=/usr/lib/dbus-1.0 --with-dbus-user=81 \
       --disable-verbose-mode --disable-static \
       --enable-inotify --disable-dnotify \
-      --disable-tests --disable-asserts
+      --disable-tests --disable-asserts \
+      --with-systemdsystemunitdir=/lib/systemd/system
 
   make
 }
