@@ -1,13 +1,16 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
 pkgname=burp-git
-pkgver=20100607
+pkgver=20100716
 pkgrel=1
 pkgdesc="A simple AUR uploader"
 arch=('i686' 'x86_64')
 url="http://github.com/falconindy/burp"
 license=('GPL')
+depends=('curl')
 makedepends=('git')
+provides=('burp')
+conflicts=('burp')
 
 _gitroot="git://github.com/falconindy/burp.git"
 _gitname="burp"
@@ -34,9 +37,6 @@ build() {
 }
 
 package() {
-  depends=('curl')
-  provides=('burp')
-
   cd "$srcdir/$_gitname-build"
   make DESTDIR="$pkgdir" MANPREFIX=/usr/share/man install
 }
