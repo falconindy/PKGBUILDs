@@ -1,15 +1,16 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 pkgname=systemd-git
-pkgver=20100713
+pkgver=20100716
 pkgrel=1
 pkgdesc="systems Session and Startup manager"
 arch=('i686' 'x86_64')
 url="http://www.freedesktop.org/wiki/Software/systemd"
 license=('GPL')
-depends=('dbus-git' 'dbus-glib' 'kernel26-systemd' 'glibc' 'libcgroup-git' 'udev>=160' 'libcap')
+depends=('dbus-git' 'dbus-glib' 'kernel26-systemd' 'glibc' 'libcgroup-git' 'udev-systemd' 'libcap' 'sysvinit')
 makedepends=('docbook-xsl' 'git' 'gtk2' 'libxslt' 'vala')
 optdepends=('gtk2: for systemadm GUI')
-provides=('sysvinit' 'systemd')
+provides=('systemd')
+install=systemd.install
 
 _gitroot="git://anongit.freedesktop.org/systemd"
 _gitname="systemd"
@@ -41,6 +42,9 @@ build() {
 package() {
   cd "$srcdir/$_gitname-build"
   make DESTDIR="$pkgdir" install || return 1
-  cd "$pkgdir"
-  mkdir -p cgroup/{cpuset,ns,net_cls,cpu,cpuacct,memory,devices,freezer}
+
+  cd "$pkgdir/usr/share/man/man8"
+  for manpage in telinit halt reboot poweroff runlevel shutdown; do
+    mv "$manpage.8" "sd-$manpage.8"
+  done
 }
