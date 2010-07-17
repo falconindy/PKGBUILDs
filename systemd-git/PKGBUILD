@@ -6,7 +6,8 @@ pkgdesc="systems Session and Startup manager"
 arch=('i686' 'x86_64')
 url="http://www.freedesktop.org/wiki/Software/systemd"
 license=('GPL')
-depends=('dbus-git' 'dbus-glib' 'kernel26-systemd' 'glibc' 'libcgroup-git' 'udev-systemd' 'libcap' 'sysvinit')
+depends=('dbus-git' 'dbus-glib' 'kernel26-systemd' 'glibc' 'libcap' 'libcgroup-git' 
+         'pam' 'sysvinit' 'tcp_wrappers' 'udev-systemd')
 makedepends=('docbook-xsl' 'git' 'gtk2' 'libxslt' 'vala')
 optdepends=('gtk2: for systemadm GUI')
 provides=('systemd')
