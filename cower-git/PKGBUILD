@@ -1,7 +1,7 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
 pkgname=cower-git
-pkgver=20100716
+pkgver=20100719
 pkgrel=1
 pkgdesc="A simple AUR agent with a pretentious name"
 arch=('i686' 'x86_64')
@@ -19,7 +19,7 @@ build() {
   cd "$srcdir"
   msg "Connecting to GIT server...."
 
-  if [ -d $_gitname ] ; then
+  if [[ -d $_gitname ]] ; then
     cd $_gitname && git pull origin
     msg "The local files are updated."
   else
@@ -33,12 +33,12 @@ build() {
   cp -r "$srcdir/$_gitname" "$srcdir/$_gitname-build"
   cd "$srcdir/$_gitname-build"
 
-  make PREFIX=/usr || return 1
+  make
 }
 
 package() {
   cd "$srcdir/$_gitname-build"
-  make PREFIX=/usr DESTDIR=${pkgdir} install
+  make PREFIX=/usr DESTDIR="$pkgdir" install
 }
 
-# vim: ft=sh syn=sh
+# vim: ft=sh syn=sh et
