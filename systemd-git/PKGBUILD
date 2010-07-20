@@ -11,6 +11,7 @@ depends=('dbus-git' 'dbus-glib' 'kernel26-systemd' 'glibc' 'libcap' 'libcgroup-g
 makedepends=('docbook-xsl' 'git' 'gtk2' 'libxslt' 'vala')
 optdepends=('gtk2: for systemadm GUI')
 provides=('systemd')
+conflicts=('systemd')
 install=systemd.install
 
 _gitroot="git://anongit.freedesktop.org/systemd"
