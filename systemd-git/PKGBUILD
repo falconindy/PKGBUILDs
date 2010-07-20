@@ -1,4 +1,5 @@
 # Contributor: Dave Reisner <d@falconindy.com>
+
 pkgname=systemd-git
 pkgver=20100719
 pkgrel=1
@@ -22,7 +23,7 @@ build() {
 
   msg "Connecting to GIT server...."
 
-  if [ -d $_gitname ] ; then
+  if [[ -d $_gitname ]] ; then
     cd $_gitname && git pull origin
     msg "The local files are updated."
   else
