@@ -1,6 +1,6 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 pkgname=systemd-git
-pkgver=20100716
+pkgver=20100719
 pkgrel=1
 pkgdesc="systems Session and Startup manager"
 arch=('i686' 'x86_64')
@@ -35,17 +35,17 @@ build() {
   git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
   cd "$srcdir/$_gitname-build"
 
-  ./bootstrap.sh --prefix=/usr --libexecdir=/usr/lib || return 1
+  ./bootstrap.sh --prefix=/usr --libexecdir=/usr/lib
 
-  make || return 1
+  make
 }
 
 package() {
   cd "$srcdir/$_gitname-build"
-  make DESTDIR="$pkgdir" install || return 1
+  make DESTDIR="$pkgdir" install
 
   cd "$pkgdir/usr/share/man/man8"
   for manpage in telinit halt reboot poweroff runlevel shutdown; do
-    mv "$manpage.8" "sd-$manpage.8"
+    mv "$manpage.8" "systemd.$manpage.8"
   done
 }
