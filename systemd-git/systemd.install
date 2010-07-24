@@ -1,5 +1,5 @@
 post_install() {
-  systemd-install enable dbus.service
+  systemctl enable dbus.service
 
   echo "systemd has been installed to /bin/systemd. Please ensure you append"
   echo "init=/bin/systemd to your kernel command line in your bootloader."

@@ -1,7 +1,7 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
 pkgname=systemd-git
-pkgver=20100719
+pkgver=20100724
 pkgrel=1
 pkgdesc="systems Session and Startup manager"
 arch=('i686' 'x86_64')
@@ -9,11 +9,13 @@ url="http://www.freedesktop.org/wiki/Software/systemd"
 license=('GPL')
 depends=('dbus-git' 'dbus-glib' 'kernel26-systemd' 'glibc' 'libcap' 'libcgroup-git' 
          'pam' 'sysvinit' 'tcp_wrappers' 'udev-systemd')
-makedepends=('docbook-xsl' 'git' 'gtk2' 'libxslt' 'vala')
+makedepends=('docbook-xsl' 'git' 'gtk2' 'libxslt' 'vala-devel')
 optdepends=('gtk2: for systemadm GUI')
 provides=('systemd')
 conflicts=('systemd')
 install=systemd.install
+source=('make-selinux-optional.patch')
+md5sums=('68474511de7c2fa966e746aa8370f47c')
 
 _gitroot="git://anongit.freedesktop.org/systemd"
 _gitname="systemd"
@@ -37,6 +39,7 @@ build() {
   git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
   cd "$srcdir/$_gitname-build"
 
+  patch -Np1 < "$srcdir/make-selinux-optional.patch"
   ./bootstrap.sh --prefix=/usr --libexecdir=/usr/lib
 
   make
