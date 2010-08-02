@@ -13,7 +13,7 @@ md5sums=('337dc84b9e72d208c22e7ab5611bb647')
 
 build() {
   cd "$srcdir/$pkgname-$pkgver"
-  make || return 1
+  make -B || return 1
 }
 
 package() {
