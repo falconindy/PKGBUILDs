@@ -4,7 +4,6 @@ pkgname=aufs2-all
 _pkgbase=aufs2
 pkgver=2.6.34_20100517
 pkgrel=1
-_kernver=$(uname -r)
 pkgdesc="Another Unionfs Implementation. Builds modules for all detected kernels"
 arch=('i686' 'x86_64')
 url="http://aufs.sourceforge.net/"
@@ -18,36 +17,32 @@ options=('!makeflags')
 md5sums=('421c5ca3d4d917f92f7c0508a16f8177')
 
 build() {
-  cd ${srcdir}/${_pkgbase}-${pkgver} || return 1
-  sed -i 's|CONFIG_AUFS_HNOTIFY =.*|CONFIG_AUFS_HNOTIFY = y|' config.mk
-  sed -i 's|CONFIG_AUFS_HFSNOTIFY =.*|CONFIG_AUFS_HFSNOTIFY = y|' config.mk
-  sed -i 's|CONFIG_AUFS_EXPORT =.*|CONFIG_AUFS_EXPORT = y|' config.mk
-  sed -i 's|CONFIG_AUFS_SHWH =.*|CONFIG_AUFS_SHWH = y|' config.mk
-  sed -i 's|CONFIG_AUFS_BDEV_LOOP =.*|CONFIG_AUFS_BDEV_LOOP = y|' config.mk
-  sed -i 's|CONFIG_AUFS_BR_RAMFS =.*|CONFIG_AUFS_BR_RAMFS = y|' config.mk
-  sed -i 's|CONFIG_AUFS_DEBUG =.*|CONFIG_AUFS_DEBUG =|' config.mk 
+  cd ${srcdir}/${_pkgbase}-${pkgver}
+  sed -i -e 's|CONFIG_AUFS_HNOTIFY =.*|CONFIG_AUFS_HNOTIFY = y|' \
+         -e 's|CONFIG_AUFS_HFSNOTIFY =.*|CONFIG_AUFS_HFSNOTIFY = y|' \
+         -e 's|CONFIG_AUFS_EXPORT =.*|CONFIG_AUFS_EXPORT = y|' \
+         -e 's|CONFIG_AUFS_SHWH =.*|CONFIG_AUFS_SHWH = y|' \
+         -e 's|CONFIG_AUFS_BDEV_LOOP =.*|CONFIG_AUFS_BDEV_LOOP = y|' \
+         -e 's|CONFIG_AUFS_BR_RAMFS =.*|CONFIG_AUFS_BR_RAMFS = y|' \
+         -e 's|CONFIG_AUFS_DEBUG =.*|CONFIG_AUFS_DEBUG =|' config.mk
 
   [[ "${CARCH}" = "x86_64" ]] && inot64="y" || inot64=""
 
   sed -i "s|CONFIG_AUFS_INO_T_64 =.*|CONFIG_AUFS_INO_T_64 =${inot64}|" config.mk
 
-  for _kernver in $(file /boot/* | sed -n '|Linux kernel.*boot executable|s|.*version \([^ ]\+\).*|\1|p'); do
+  for _kernver in $(file /boot/* | sed -n '/Linux kernel/s/.* version \(2\.6\.[-[:alnum:]_]\+\).*/\1/p'); do
     msg2 "Building module for $_kernver..."
 
-    # build
-    make KDIR=/usr/src/linux-${_kernver} || return 1
+    # KDIR is necessary even when cleaning
+    make KDIR=/usr/src/linux-${_kernver} clean
+    make KDIR=/usr/src/linux-${_kernver}
 
-    # install
     install -D -m644 fs/aufs/aufs.ko $pkgdir/lib/modules/${_kernver}/kernel/fs/aufs/aufs.ko
-
-    # tweak the install script for the right kernel version
-    #sed -i -e "s/KERNEL_VERSION=.*/KERNEL_VERSION=${_kernver}/g" $startdir/$_pkgbase.install
 
     # install include files if not included with kernel
     [[ ! -f /usr/src/linux-$_kernver/include/linux/aufs_type.h ]] &&
       install -D -m 644 include/linux/aufs_type.h $pkgdir/usr/src/linux-$_kernver/include/linux/aufs_type.h
 
-    make clean
   done
 
 }
