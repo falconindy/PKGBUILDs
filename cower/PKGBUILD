@@ -2,7 +2,7 @@
 
 pkgname=cower
 pkgver=2.3
-pkgrel=2
+pkgrel=3
 pkgdesc="A simple AUR agent with a pretentious name."
 arch=('i686' 'x86_64')
 url="http://github.com/falconindy/cower"
@@ -13,7 +13,7 @@ md5sums=('1226b257f692c8203a6ca1feb750ed22')
 
 build() {
   cd "$srcdir/$pkgname-$pkgver"
-  make PREFIX=/usr || return 1
+  make PREFIX=/usr -B || return 1
 }
 
 package() {
