@@ -2,9 +2,9 @@
 
 pkgname='kernel26-systemd'
 _kernelname=${pkgname#kernel26}
-_basekernel=2.6.34
+_basekernel=2.6.35
 url="http://www.kernel.org"
-pkgver=${_basekernel}.1
+pkgver=${_basekernel}
 pkgrel=1
 _patchname="patch-${pkgver}-${pkgrel}-ARCH"
 arch=(i686 x86_64)
@@ -12,10 +12,7 @@ license=('GPL2')
 pkgdesc="The Linux Kernel and modules, with minor modifications for systemd"
 groups=('base')
 backup=(etc/mkinitcpio.d/${pkgname}.preset)
-depends=('coreutils' 'kernel26-firmware>=2.6.32' 'module-init-tools' 'mkinitcpio>=0.5.20')
-# pwc, ieee80211 and hostap-driver26 modules are included in kernel26 now
-# nforce package support was abandoned by nvidia, kernel modules should cover everything now.
-# kernel24 support is dropped since glibc24
+depends=('coreutils' 'linux-firmware' 'module-init-tools' 'mkinitcpio>=0.5.20')
 replaces=('kernel24' 'kernel24-scsi' 'kernel26-scsi'
           'alsa-driver' 'ieee80211' 'hostap-driver26'
           'pwc' 'nforce' 'squashfs' 'unionfs' 'ivtv'
@@ -29,10 +26,10 @@ source=(ftp://ftp.kernel.org/pub/linux/kernel/v2.6/linux-$_basekernel.tar.bz2
         config config.x86_64
         # standard config files for mkinitcpio ramdisk
         kernel26-systemd.preset)
-md5sums=('10eebcb0178fb4540e2165bfd7efc7ad'
-         '2fbd20a8a1387589b0cc8969851ba27c'
-         '250f4950158cd651b56f57242c7b9329'
-         'ec045c00541b49dfea13aaaf1a079c7d'
+md5sums=('091abeb4684ce03d1d936851618687b6'
+         '40fa7f94ff4b684ff20cdc715c688f62'
+         '1dd9de2556513f1bb92ed36b9060e185'
+         '7c2f029dee64deeee83c363812edb22d'
          'af2235641e632e433cc98084b25681a2')
 
 build() {
@@ -49,7 +46,7 @@ build() {
   if [ "${_kernelname}" != "" ]; then
     sed -i "s|CONFIG_LOCALVERSION=.*|CONFIG_LOCALVERSION=\"${_kernelname}\"|g" ./.config
   fi
-  # get kernel version  
+  # get kernel version
   make prepare
   # load configuration
   # Configure the kernel. Replace the line below with one of your choice.
