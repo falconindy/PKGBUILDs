@@ -2,7 +2,7 @@
 
 pkgname=aufs2-all
 _pkgbase=aufs2
-pkgver=2.6.34_20100517
+pkgver=2.6.35_20100802
 pkgrel=1
 pkgdesc="Another Unionfs Implementation. Builds modules for all detected kernels"
 arch=('i686' 'x86_64')
@@ -14,7 +14,7 @@ provides=('aufs2')
 install=aufs2.install
 source=(ftp://ftp.archlinux.org/other/aufs2/${_pkgbase}-${pkgver}.tar.gz)
 options=('!makeflags')
-md5sums=('421c5ca3d4d917f92f7c0508a16f8177')
+md5sums=('e0b3f5709e1cb746fdfa43047354ad4d')
 
 build() {
   cd ${srcdir}/${_pkgbase}-${pkgver}
