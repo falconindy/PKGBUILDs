@@ -1,8 +1,0 @@
-post_install() {
-  systemctl enable dbus.service
-
-  echo "systemd has been installed to /bin/systemd. Please ensure you append"
-  echo "init=/bin/systemd to your kernel command line in your bootloader."
-}
-
-# vim:set ts=2 sw=2 et:
