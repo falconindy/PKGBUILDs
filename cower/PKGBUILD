@@ -1,24 +1,24 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
 pkgname=cower
-pkgver=2.3
-pkgrel=3
-pkgdesc="A simple AUR agent with a pretentious name."
+pkgver=2.4
+pkgrel=1
+pkgdesc="A simple AUR agent with a pretentious name"
 arch=('i686' 'x86_64')
 url="http://github.com/falconindy/cower"
 license=('GPL')
 depends=('curl' 'yajl' 'pacman')
 source=("http://github.com/downloads/falconindy/$pkgname/$pkgname-$pkgver.tar.gz")
-md5sums=('1226b257f692c8203a6ca1feb750ed22')
+md5sums=('5a0d4c78dd9ec43e134b4f8a5a6c4604')
 
 build() {
   cd "$srcdir/$pkgname-$pkgver"
-  make PREFIX=/usr -B || return 1
+  make -B
 }
 
 package() {
   cd "$srcdir/$pkgname-$pkgver"
-  make DESTDIR=${pkgdir} PREFIX=/usr install
+  make PREFIX=/usr DESTDIR=${pkgdir} install
 }
 
 # vim: ft=sh syn=sh
