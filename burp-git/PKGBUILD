@@ -1,14 +1,14 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
 pkgname=burp-git
-pkgver=20100716
+pkgver=20100828
 pkgrel=1
 pkgdesc="A simple AUR uploader"
 arch=('i686' 'x86_64')
 url="http://github.com/falconindy/burp"
 license=('GPL')
 depends=('curl')
-makedepends=('git')
+makedepends=('git' 'perl')
 provides=('burp')
 conflicts=('burp')
 

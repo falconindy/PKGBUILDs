@@ -2,12 +2,13 @@
 
 pkgname=cower
 pkgver=2.4
-pkgrel=1
+pkgrel=2
 pkgdesc="A simple AUR agent with a pretentious name"
 arch=('i686' 'x86_64')
 url="http://github.com/falconindy/cower"
 license=('GPL')
 depends=('curl' 'yajl' 'pacman')
+makedepends=('perl')
 source=("http://github.com/downloads/falconindy/$pkgname/$pkgname-$pkgver.tar.gz")
 md5sums=('5a0d4c78dd9ec43e134b4f8a5a6c4604')
 

@@ -8,6 +8,7 @@ arch=('i686' 'x86_64')
 url="http://github.com/falconindy/burp"
 license=('GPL')
 depends=('curl')
+makedepends=('perl')
 source=("http://github.com/downloads/falconindy/$pkgname/$pkgname-$pkgver.tar.gz")
 md5sums=('7a61eb24544bf322d2a349554962a1c6')
 
