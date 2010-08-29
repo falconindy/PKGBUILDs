@@ -1,7 +1,7 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
 pkgname=dbus-git
-pkgver=20100716
+pkgver=20100829
 pkgrel=1
 pkgdesc="Freedesktop.org message bus system"
 url="http://www.freedesktop.org/Software/dbus"
@@ -9,7 +9,7 @@ arch=('i686' 'x86_64')
 license=('GPL' 'custom')
 depends=('libx11' 'expat' 'coreutils' 'filesystem')
 makedepends=('git')
-provides=('dbus' 'dbus-core')
+provides=('dbus=1.3.2' 'dbus-core=1.3.2')
 conflicts=('dbus' 'dbus-core')
 options=(!libtool emptydirs)
 install=dbus.install
