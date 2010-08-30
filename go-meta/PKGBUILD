@@ -1,4 +1,4 @@
-# Maintainer: Your Name <youremail@domain.com>
+# Maintainer: Dave Reisner <d@falconindy.com>
 pkgname=go-meta
 pkgver=2112
 pkgrel=1

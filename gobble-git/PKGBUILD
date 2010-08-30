@@ -1,7 +1,5 @@
-# See http://wiki.archlinux.org/index.php/VCS_PKGBUILD_Guidelines
-# for more information on packaging from GIT sources.
+# Contributor: Dave Reisner <d@falconindy.com>
 
-# Contributor: Your Name <youremail@domain.com>
 pkgname=gobble-git
 pkgver=20100830
 pkgrel=1
