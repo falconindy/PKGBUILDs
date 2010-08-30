@@ -42,8 +42,7 @@ build() {
       --libexecdir=/usr/lib/dbus-1.0 --with-dbus-user=81 \
       --disable-verbose-mode --disable-static \
       --enable-inotify --disable-dnotify \
-      --disable-tests --disable-asserts \
-      --with-systemdsystemunitdir=/lib/systemd/system
+      --disable-tests --disable-asserts
 
   make
 }
