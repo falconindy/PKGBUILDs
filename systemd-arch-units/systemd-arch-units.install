@@ -1,0 +1,26 @@
+## arg 1:  the new package version
+post_install() {
+  systemctl --system daemon-reload
+  cat << EOF
+-- NOTICE --------------------------------------------------------------------------
+All unit files have been installed to /etc/systemd/system. This only allows systemd
+to be aware of them. It will not register them for automatic activation on boot. You
+must symlink these unit files into the various *.target.wants directories in 
+/etc/systemd/system in order for automatic activation to occur.
+------------------------------------------------------------------------------------
+EOF
+
+}
+
+## arg 1:  the new package version
+## arg 2:  the old package version
+post_upgrade() {
+  post_install
+}
+
+## arg 1:  the old package version
+post_remove() {
+  systemctl --system daemon-reload
+}
+
+# vim:set ts=2 sw=2 et:
