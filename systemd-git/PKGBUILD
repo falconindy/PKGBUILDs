@@ -1,7 +1,7 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
 pkgname=systemd-git
-pkgver=20100829
+pkgver=20100831
 pkgrel=1
 pkgdesc="systems Session and Startup manager"
 arch=('i686' 'x86_64')
@@ -10,7 +10,8 @@ license=('GPL')
 depends=('dbus-systemd' 'dbus-glib' 'kernel26-systemd' 'glibc' 'libcap' 'libcgroup-git' 
          'pam' 'sysvinit' 'tcp_wrappers' 'udev-systemd')
 makedepends=('docbook-xsl' 'git' 'gtk2' 'libxslt' 'vala-devel')
-optdepends=('gtk2: for systemadm GUI')
+optdepends=('gtk2: for systemadm GUI'
+            'systemd-arch-units: collection of native unit files for Arch daemon/init scripts')
 provides=('systemd')
 conflicts=('systemd')
 install=systemd.install
