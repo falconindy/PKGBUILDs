@@ -10,7 +10,7 @@ _patchname="patch-${pkgver}-${pkgrel}-ARCH"
 arch=(i686 x86_64)
 license=('GPL2')
 pkgdesc="The Linux Kernel and modules, with minor modifications for systemd"
-groups=('base')
+groups=('systemd')
 backup=(etc/mkinitcpio.d/${pkgname}.preset)
 depends=('coreutils' 'linux-firmware' 'module-init-tools' 'mkinitcpio>=0.5.20')
 replaces=('kernel24' 'kernel24-scsi' 'kernel26-scsi'

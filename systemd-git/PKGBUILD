@@ -14,6 +14,7 @@ optdepends=('gtk2: for systemadm GUI'
             'systemd-arch-units: collection of native unit files for Arch daemon/init scripts')
 provides=('systemd')
 conflicts=('systemd')
+groups=('systemd')
 install=systemd.install
 
 _gitroot="git://anongit.freedesktop.org/systemd"

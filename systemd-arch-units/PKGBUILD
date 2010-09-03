@@ -11,6 +11,7 @@ url="http://github.com/falconindy/systemd-arch-units"
 license=('MIT')
 depends=('systemd')
 makedepends=('git')
+groups=('systemd')
 install=systemd-arch-units.install
 
 _gitroot="git://github.com/falconindy/systemd-arch-units.git"
