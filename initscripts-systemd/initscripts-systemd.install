@@ -1,0 +1,21 @@
+UNITS="systemd-random-seed-save.service \
+       systemd-random-seed-load.service \
+       sysctl.service"
+
+## arg 1:  the new package version
+post_install() {
+  systemctl enable $UNITS
+}
+
+## arg 1:  the new package version
+## arg 2:  the old package version
+post_upgrade() {
+  post_install
+}
+
+## arg 1:  the old package version
+post_remove() {
+  systemctl disable $UNITS
+}
+
+# vim:set ts=2 sw=2 et:
