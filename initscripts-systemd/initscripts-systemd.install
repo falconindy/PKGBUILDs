@@ -1,6 +1,7 @@
-UNITS="systemd-random-seed-save.service \
-       systemd-random-seed-load.service \
-       sysctl.service"
+UNITS="systemd-random-seed-save.service systemd-random-seed-load.service \
+       hwclock-save.service hwclock-load.service \
+       sysctl.service \
+       udev.service"
 
 ## arg 1:  the new package version
 post_install() {
