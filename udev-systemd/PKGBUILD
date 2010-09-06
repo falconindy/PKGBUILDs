@@ -3,7 +3,7 @@
 pkgname='udev-systemd'
 _pkgname='udev'
 pkgdesc="The userspace dev tools (udev). Built for compatibility with systemd."
-pkgver=161
+pkgver=162
 pkgrel=1
 arch=(i686 x86_64)
 url="http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html"
@@ -21,7 +21,7 @@ install=udev.install
 source=(http://www.kernel.org/pub/linux/utils/kernel/hotplug/${_pkgname}-$pkgver.tar.bz2
         81-arch.rules load-modules.sh cdsymlinks.sh
         arch-udev-rules.patch)
-md5sums=('95b6a0ffc9913f3e8021c65f51eb4f88'
+md5sums=('dd7099242e92084605e07db0c7299a02'
          '25457ee598aa2ed8af66d173a1677e00'
          'f91fddc67609b45b244a624977c4247b'
          '2e808ee78d237c478b57af2a68d43769'
@@ -65,6 +65,9 @@ package() {
      $pkgdir/etc/udev/rules.d/75-persistent-net-generator.rules.optional
   mv $pkgdir/lib/udev/rules.d/75-cd-aliases-generator.rules \
      $pkgdir/etc/udev/rules.d/75-cd-aliases-generator.rules.optional
+
+  # fix systemd unit files
+  sed -i 's/${exec_prefix}//g' "$pkgdir"/lib/systemd/system/udev*.service
 
   # create framebuffer blacklist
   mkdir -p $pkgdir/etc/modprobe.d/
