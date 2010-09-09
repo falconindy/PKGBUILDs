@@ -10,8 +10,10 @@ license=('GPL')
 depends=('dbus-systemd' 'dbus-glib' 'kernel26-systemd' 'glibc' 'libcap' 'libcgroup-git' 
          'pam' 'sysvinit' 'tcp_wrappers' 'udev-systemd')
 makedepends=('docbook-xsl' 'git' 'gtk2' 'libxslt' 'vala-devel')
-optdepends=('gtk2: for systemadm GUI'
-            'systemd-arch-units: collection of native unit files for Arch daemon/init scripts')
+optdepends=('gtk2: systemadm GUI'
+            'systemd-arch-units: collection of native unit files for Arch daemon/init scripts'
+            'initscripts-systemd: native boot and initialization scripts'
+            'selinux-usr-libselinux: integration with security enhanced Linux')
 provides=('systemd')
 conflicts=('systemd')
 groups=('systemd')
