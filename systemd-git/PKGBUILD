@@ -16,6 +16,7 @@ optdepends=('gtk2: systemadm GUI'
 provides=('systemd')
 conflicts=('systemd')
 groups=('systemd')
+options=(!libtool)
 install=systemd.install
 
 _gitroot="git://anongit.freedesktop.org/systemd"
