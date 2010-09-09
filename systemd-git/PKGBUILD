@@ -7,9 +7,8 @@ pkgdesc="Session and Startup manager"
 arch=('i686' 'x86_64')
 url="http://www.freedesktop.org/wiki/Software/systemd"
 license=('GPL')
-depends=('dbus-systemd' 'dbus-glib' 'kernel26-systemd' 'glibc' 'libcap' 'libcgroup-git' 
-         'pam' 'sysvinit' 'tcp_wrappers' 'udev-systemd')
-makedepends=('docbook-xsl' 'git' 'gtk2' 'libxslt' 'vala-devel')
+depends=('dbus-systemd' 'dbus-glib' 'kernel26-systemd' 'sysvinit' 'tcp_wrappers' 'udev-systemd')
+makedepends=('docbook-xsl' 'git' 'gtk2' 'libcgroup-git' 'libxslt' 'vala-devel')
 optdepends=('gtk2: systemadm GUI'
             'systemd-arch-units: collection of native unit files for Arch daemon/init scripts'
             'initscripts-systemd: native boot and initialization scripts'
