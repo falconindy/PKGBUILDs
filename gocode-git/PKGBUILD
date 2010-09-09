@@ -1,7 +1,7 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
 pkgname=gocode-git
-pkgver=20100811
+pkgver=20100908
 pkgrel=1
 pkgdesc="An autocompletion/refactoring daemon for the Go programming language (for use in Vim)"
 arch=(i686 x86_64)
@@ -43,4 +43,5 @@ package() {
   cd vim
   install -m644 -D autoload/gocomplete.vim "$pkgdir/usr/share/vim/vimfiles/autoload/gocomplete.vim"
   install -m644 -D ftplugin/go.vim "$pkgdir/usr/share/vim/vimfiles/ftplugin/go.vim"
+  install -m644 -D plugin/gocode.vim "$pkgdir/usr/share/vim/vimfiles/plugin/gocode.vim" 
 }
