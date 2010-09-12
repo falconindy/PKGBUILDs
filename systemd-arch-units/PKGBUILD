@@ -1,9 +1,7 @@
-# See http://wiki.archlinux.org/index.php/VCS_PKGBUILD_Guidelines
-# for more information on packaging from GIT sources.
+# Contributor: Dave Reisner <d@falconindy.com>
 
-# Contributor: Your Name <youremail@domain.com>
 pkgname=systemd-arch-units
-pkgver=20100831
+pkgver=20100912
 pkgrel=1
 pkgdesc="Arch specific Systemd unit files"
 arch=('any')
