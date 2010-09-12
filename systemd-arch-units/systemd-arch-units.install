@@ -3,10 +3,9 @@ post_install() {
   systemctl --system daemon-reload
   cat << EOF
 -- NOTICE --------------------------------------------------------------------------
-All unit files have been installed to /etc/systemd/system. This only allows systemd
-to be aware of them. It will not register them for automatic activation on boot. You
-must symlink these unit files into the various *.target.wants directories in 
-/etc/systemd/system in order for automatic activation to occur.
+All unit files have been installed to /lib/systemd/system. This only allows systemd
+to be aware of them. It will not register them for automatic activation on boot. Use
+'systemctl enable <unit>' to ensure that a unit is started at boot.
 ------------------------------------------------------------------------------------
 EOF
 
