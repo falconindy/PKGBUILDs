@@ -2,7 +2,7 @@
 
 pkgname=systemd
 pkgver=10
-pkgrel=1
+pkgrel=2
 pkgdesc="Session and Startup manager"
 arch=('i686' 'x86_64')
 url="http://www.freedesktop.org/wiki/Software/systemd"
@@ -23,9 +23,12 @@ md5sums=('346ad2a67def5bf8750da0479505ec0e')
 build() {
   cd "$srcdir/$pkgname-$pkgver"
 
+  msg2 "Running autoreconf..."
   autoreconf
-  ./configure --prefix=/usr --libexecdir=/usr/lib --disable-audit
+  ./configure --prefix=/usr --with-rootdir=/ --sysconfdir=/etc --libexecdir=/usr/lib \
+              --disable-audit
 
+  msg2 "Starting make..."
   make
 }
 
