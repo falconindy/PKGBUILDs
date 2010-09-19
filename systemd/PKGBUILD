@@ -1,0 +1,40 @@
+# Contributor: Dave Reisner <d@falconindy.com>
+
+pkgname=systemd
+pkgver=10
+pkgrel=1
+pkgdesc="Session and Startup manager"
+arch=('i686' 'x86_64')
+url="http://www.freedesktop.org/wiki/Software/systemd"
+license=('GPL')
+depends=('dbus-systemd' 'dbus-glib' 'kernel26-systemd' 'sysvinit' 'udev-systemd')
+makedepends=('docbook-xsl' 'git' 'gtk2' 'libxslt' 'vala')
+optdepends=('gtk2: systemadm GUI'
+            'systemd-arch-units: collection of native unit files for Arch daemon/init scripts'
+            'initscripts-systemd: native boot and initialization scripts'
+            'selinux-usr-libselinux: integration with security enhanced Linux'
+            'tcp_wrappers: filter remote access to services')
+groups=('systemd')
+options=(!libtool)
+install=systemd.install
+source=("http://www.freedesktop.org/software/$pkgname/$pkgname-$pkgver.tar.bz2")
+md5sums=('346ad2a67def5bf8750da0479505ec0e')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  autoreconf
+  ./configure --prefix=/usr --libexecdir=/usr/lib --disable-audit
+
+  make
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make DESTDIR="$pkgdir" install
+
+  cd "$pkgdir/usr/share/man/man8"
+  for manpage in telinit halt reboot poweroff runlevel shutdown; do
+    mv "$manpage.8" "systemd.$manpage.8"
+  done
+}
