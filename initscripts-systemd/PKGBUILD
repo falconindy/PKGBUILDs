@@ -12,7 +12,7 @@ depends=('systemd' 'kbd' 'coreutils' 'findutils' 'ncurses' 'sysvinit' 'grep' 'ne
 makedepends=('git')
 provides=('initscripts')
 conflicts=('initscripts')
-backup=(etc/rc.local etc/rc.local.shutdown)
+backup=(etc/rc.conf etc/rc.local etc/rc.local.shutdown)
 install=initscripts-systemd.install
 
 _gitroot="git://github.com/falconindy/initscripts-systemd.git"
