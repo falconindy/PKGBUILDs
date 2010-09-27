@@ -1,7 +1,7 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
 pkgname=initscripts-systemd-git
-pkgver=20100910
+pkgver=20100926
 pkgrel=1
 pkgdesc="System initialization/bootup scripts. Modified for use with systemd."
 arch=('any')
