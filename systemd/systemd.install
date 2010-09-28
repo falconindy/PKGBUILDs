@@ -1,12 +1,22 @@
 post_install() {
   systemctl enable dbus.service
 
+  if ! getent group lock; then
+    groupadd -g 54 lock
+  fi
+
   echo "systemd has been installed to /bin/systemd. Please ensure you append"
   echo "init=/bin/systemd to your kernel command line in your bootloader."
 }
 
 post_upgrade() {
   echo ":: Call \`systemctl daemon-reexec' to reload systemd"
+}
+
+post_remove() {
+  if getent group lock; then
+    groupdel lock
+  fi
 }
 
 # vim:set ts=2 sw=2 et:
