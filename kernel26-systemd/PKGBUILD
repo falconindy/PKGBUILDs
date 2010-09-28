@@ -4,7 +4,7 @@ pkgname='kernel26-systemd'
 _kernelname=${pkgname#kernel26}
 _basekernel=2.6.35
 url="http://www.kernel.org"
-pkgver=${_basekernel}.5
+pkgver=${_basekernel}.6
 pkgrel=1
 _patchname="patch-${pkgver}-${pkgrel}-ARCH"
 arch=(i686 x86_64)
@@ -28,7 +28,7 @@ source=(ftp://ftp.kernel.org/pub/linux/kernel/v2.6/linux-$_basekernel.tar.bz2
         # standard config files for mkinitcpio ramdisk
         kernel26-systemd.preset)
 md5sums=('091abeb4684ce03d1d936851618687b6'
-         '9efb0f5c18fe70fdf475e1eba3f953fd'
+         'b0278f2cac46f4b71d2546caf4a6b607'
          '5d231a058ddd1fab5ea3d9899948b108'
          'bafd560297e1d491440ba779e79db6a5'
          '506e67c892bce549e4a04a45a0015dff'
