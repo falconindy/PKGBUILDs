@@ -1,7 +1,7 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
 pkgname=systemd-git
-pkgver=20100918
+pkgver=20100928
 pkgrel=1
 pkgdesc="Session and Startup manager"
 arch=('i686' 'x86_64')
