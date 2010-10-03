@@ -35,17 +35,17 @@ build() {
   ./autogen.sh
 
   if [ "${CARCH}" = "x86_64" ]; then
-    ./configure --prefix=/usr --mandir=/usr/share/man --enable-only64bit || return 1
+    ./configure --prefix=/usr --mandir=/usr/share/man --enable-only64bit
   else
-    ./configure --prefix=/usr --mandir=/usr/share/man || return 1
+    ./configure --prefix=/usr --mandir=/usr/share/man
   fi
 
-  make || return 1
+  make
 }
 
 package() {
   cd "$srcdir/${_svnmod}-build"
-  make DESTDIR=${pkgdir} install || return 1
+  make DESTDIR=${pkgdir} install
 }
 
 # vim:set ts=2 sw=2 et:

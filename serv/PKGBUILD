@@ -30,7 +30,7 @@ build() {
   cp -r "$srcdir/$_gitname" "$srcdir/$_gitname-build"
 
   cd "$srcdir/$_gitname-build"
-  make || return 1
+  make
 }
 
 package() {
