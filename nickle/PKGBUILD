@@ -1,0 +1,24 @@
+# Maintainer: Your Name <youremail@domain.com>
+pkgname=nickle
+pkgver="2010_07_08"
+_pkgver=${pkgver//_/-}
+pkgrel=1
+pkgdesc="a programming language based prototyping environment with powerful programming and scripting capabilities."
+arch=('i686' 'x86_64')
+url="http://nickle.org"
+license=('GPL')
+source=("http://nickle.org/snapshots/nickle-${_pkgver}.tar.bz2")
+md5sums=('7727aa94788e97257b50106eacaf6328')
+
+build() {
+  cd "$srcdir/$pkgname-$_pkgver"
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd "$srcdir/$pkgname-$_pkgver"
+  make DESTDIR="$pkgdir/" install
+}
+
+# vim:set ts=2 sw=2 et:

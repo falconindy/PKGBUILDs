@@ -1,0 +1,16 @@
+post_install() {
+  echo "put this in /etc/fstab:"
+  echo "     none  /proc/sys/fs/binfmt_misc binfmt_misc defaults 0 0"
+  echo
+  echo "and put this in /etc/rc.local:"
+  echo "     # binfmt_misc support for Java applications:"
+  echo "     echo ':Java:M::\xca\xfe\xba\xbe::/usr/local/bin/javawrapper:' > /proc/sys/fs/binfmt_misc/register"
+  echo "     # binfmt_misc support for executable Jar files:"
+  echo "     echo ':ExecutableJAR:E::jar::/usr/local/bin/jarwrapper:' > /proc/sys/fs/binfmt_misc/register"
+  echo "     # binfmt_misc support for Java Applets:"
+  echo "     echo ':Applet:E::html::/opt/java/bin/appletviewer:' > /proc/sys/fs/binfmt_misc/register"
+
+  [ -n "$(findmnt -nt binfmt_misc)" ] || mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc
+}
+
+# vim:set ts=2 sw=2 et:

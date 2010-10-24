@@ -1,0 +1,27 @@
+# Maintainer: Dave Reisner <d@falconindy.com>
+
+pkgname=binfmt-java
+pkgver=0.1
+pkgrel=1
+pkgdesc="binfmt_misc support for java class and jar files"
+arch=('i686' 'x86_64')
+url="http://wiki.archlinux.org/index.php/Binfmt_misc_for_Java"
+license=('GPL')
+install=binfmt-java.install
+source=(javawrapper jarwrapper javaclassname.c)
+md5sums=('9ce3e77c9407d50eb04b14652fc683eb'
+         'a739693b61700d71643bf29459b1e217'
+         '5f56210b056b7be206fe5d9f04512c05')
+
+build() {
+  cd "$srcdir"
+  make javaclassname
+}
+
+package() {
+  cd "$srcdir"
+  install -d "$pkgdir/usr/bin"
+  install -Dm755 javawrapper jarwrapper javaclassname "$pkgdir/usr/bin"
+}
+
+# vim:set ts=2 sw=2 et:
