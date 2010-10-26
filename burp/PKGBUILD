@@ -1,7 +1,7 @@
-# Contributor: Dave Reisner <d@falconindy.com>
+# Maintainer: Dave Reisner <d@falconindy.com>
 
 pkgname=burp
-pkgver=1.5
+pkgver=1.6
 pkgrel=1
 pkgdesc="A simple AUR uploader"
 arch=('i686' 'x86_64')
@@ -10,7 +10,7 @@ license=('GPL')
 depends=('curl')
 makedepends=('perl')
 source=("http://github.com/downloads/falconindy/$pkgname/$pkgname-$pkgver.tar.gz")
-md5sums=('7a61eb24544bf322d2a349554962a1c6')
+md5sums=('c58f4a335976934bb351d9bf089f2f0b')
 
 build() {
   cd "$srcdir/$pkgname-$pkgver"
