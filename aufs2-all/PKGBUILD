@@ -1,9 +1,9 @@
-# Contributor: Dave Reisner <d@falconindy.com>
+# Maintainer: Dave Reisner <d@falconindy.com>
 
 pkgname=aufs2-all
 _pkgbase=aufs2
 pkgver=2.6.35_20100802
-pkgrel=1
+pkgrel=2
 pkgdesc="Another Unionfs Implementation. Builds modules for all detected kernels"
 arch=('i686' 'x86_64')
 url="http://aufs.sourceforge.net/"
@@ -40,7 +40,7 @@ build() {
     install -D -m644 fs/aufs/aufs.ko $pkgdir/lib/modules/${_kernver}/kernel/fs/aufs/aufs.ko
 
     # install include files if not included with kernel
-    [[ ! -f /usr/src/linux-$_kernver/include/linux/aufs_type.h ]] &&
+    [[ -f /usr/src/linux-$_kernver/include/linux/aufs_type.h ]] ||
       install -D -m 644 include/linux/aufs_type.h $pkgdir/usr/src/linux-$_kernver/include/linux/aufs_type.h
 
   done
