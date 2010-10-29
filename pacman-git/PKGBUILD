@@ -4,7 +4,7 @@
 # Contributor: Andres Perera <aepd87@gmail.com>
 
 pkgname=pacman-git
-pkgver=20101014
+pkgver=20101029
 pkgrel=1
 pkgdesc="A library-based package manager with dependency support. git version."
 arch=('i686' 'x86_64')
@@ -12,6 +12,7 @@ url="http://www.archlinux.org/pacman/"
 license=('GPL')
 groups=('base')
 depends=('bash' 'libarchive>=2.7.1' 'libfetch>=2.25' 'pacman-mirrorlist')
+makedepends=('git' 'asciidoc')
 optdepends=('fakeroot: for makepkg usage as normal user'
             'curl: for rankmirrors usage')
 backup=(etc/pacman.conf etc/makepkg.conf)
