@@ -1,7 +1,7 @@
 # Maintainer: Dave Reisner <d@falconindy.com>
 
 pkgname=burp
-pkgver=1.6
+pkgver=1.6.1
 pkgrel=1
 pkgdesc="A simple AUR uploader"
 arch=('i686' 'x86_64')
@@ -23,3 +23,4 @@ package() {
 }
 
 # vim: ft=sh syn=sh
+md5sums=('99262467651d390d8940a284b7954d71')
