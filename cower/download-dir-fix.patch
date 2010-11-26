@@ -1,0 +1,228 @@
+From 0c98aff3b789395f352c841d3f88dcb600e90dde Mon Sep 17 00:00:00 2001
+From: Dave Reisner <d@falconindy.com>
+Date: Fri, 19 Nov 2010 16:24:23 -0500
+Subject: [PATCH] set download directory sooner
+
+borrow from 3.x where the download dir is verified and set before doing
+anything else. this fixes issues like with --update/--download.
+---
+ conf.h     |    2 +-
+ cower.c    |   43 ++++++++++++++++++++++++++++++++++++++++++-
+ download.c |   35 ++++++-----------------------------
+ util.c     |   15 ---------------
+ util.h     |    1 -
+ 5 files changed, 49 insertions(+), 47 deletions(-)
+
+diff --git a/conf.h b/conf.h
+index 0f5f30d..e460e18 100644
+--- a/conf.h
++++ b/conf.h
+@@ -47,7 +47,7 @@ struct config_t {
+   unsigned short quiet;
+   unsigned short moreinfo;
+   loglevel_t logmask;
+-  const char *download_dir;
++  char *download_dir;
+   char *proto;
+ 
+   alpm_list_t *ignorepkgs;
+diff --git a/cower.c b/cower.c
+index a41efe9..4191054 100644
+--- a/cower.c
++++ b/cower.c
+@@ -27,6 +27,7 @@
+ #define _GNU_SOURCE
+ 
+ #include <ctype.h> /* isspace */
++#include <errno.h>
+ #include <getopt.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+@@ -193,7 +194,7 @@ static int parseargs(int argc, char **argv) {
+         if (config->download_dir) {
+           FREE(config->download_dir);
+         }
+-        config->download_dir = relative_to_absolute_path(optarg);
++        config->download_dir = strdup(optarg);
+         break;
+       case OP_IGNORE:
+         list = strsplit(optarg, ',');
+@@ -228,6 +229,41 @@ static int parseargs(int argc, char **argv) {
+   return(0);
+ }
+ 
++static int set_download_path() {
++  char *real_download_dir;
++
++  if (!(config->op & OP_DL)) {
++    return(0);
++  }
++
++  if (!config->download_dir) {
++    config->download_dir = getcwd(NULL, PATH_MAX + 1);
++  }
++
++  real_download_dir = realpath(config->download_dir, NULL);
++  if (!real_download_dir) {
++    cwr_fprintf(stderr, LOG_ERROR, "%s: %s\n", config->download_dir, strerror(errno));
++    return(1);
++  }
++
++  if (access(real_download_dir, W_OK) != 0) {
++    cwr_fprintf(stderr, LOG_ERROR, "Cannot write to %s: %s\n",
++        real_download_dir, strerror(errno));
++    return(1);
++  }
++
++  if (chdir(real_download_dir) != 0) {
++    cwr_fprintf(stderr, LOG_ERROR, "%s: %s\n", real_download_dir, strerror(errno));
++    return(1);
++  }
++  cwr_printf(LOG_DEBUG, "working directory set to: %s\n", real_download_dir);
++
++  FREE(config->download_dir);
++  config->download_dir = real_download_dir;
++
++  return(0);
++}
++
+ static int read_config_file() {
+   int ret = 0;
+   char *ptr, *xdg_config_home;
+@@ -383,6 +419,11 @@ int main(int argc, char **argv) {
+ 
+   string_setup();
+ 
++  ret = set_download_path();
++  if (ret != 0) {
++    cleanup(ret);
++  }
++
+   if (strcmp(config->proto, HTTPS) == 0) {
+     curl_global_init(CURL_GLOBAL_SSL);
+   } else {
+diff --git a/download.c b/download.c
+index a16f818..6cebcc4 100644
+--- a/download.c
++++ b/download.c
+@@ -82,8 +82,7 @@ finish:
+ 
+ 
+ int download_taurball(struct aur_pkg_t *aurpkg) {
+-  const char *pkgname;
+-  char *dir, *escaped, *url, *tarball;
++  char *escaped, *url;
+   CURL *curl;
+   CURLcode curlstat;
+   long httpcode;
+@@ -93,34 +92,20 @@ int download_taurball(struct aur_pkg_t *aurpkg) {
+     .data = NULL
+   };
+ 
+-  /* establish download dir */
+-  dir = getcwd(NULL, PATH_MAX);
+-
+-  pkgname = aurpkg->name;
+-
+-  cwr_asprintf(&tarball, "%s.tar.gz", pkgname);
+-
+-  if (file_exists(pkgname) && !config->force) {
++  if (file_exists(aurpkg->name) && !config->force) {
+     cwr_fprintf(stderr, LOG_ERROR, "`%s' already exists.\n"
+-        "Use -f to force this operation.\n", pkgname);
+-    FREE(dir);
++        "Use -f to force this operation.\n", aurpkg->name);
+     return(1);
+   }
+ 
+   /* all clear to download */
+   curl = curl_local_init();
+-  escaped = curl_easy_escape(curl, pkgname, strlen(pkgname));
++  escaped = curl_easy_escape(curl, aurpkg->name, strlen(aurpkg->name));
+   cwr_asprintf(&url, AUR_PKG_URL, config->proto, escaped, escaped);
+   curl_free(escaped);
+ 
+   cwr_printf(LOG_DEBUG, "Fetching URL %s\n", url);
+ 
+-  if (access(dir, W_OK)) {
+-    cwr_fprintf(stderr, LOG_ERROR, "could not write to %s\n", dir);
+-    FREE(dir);
+-    return(1);
+-  }
+-
+   curl_easy_setopt(curl, CURLOPT_URL, url);
+   curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+@@ -139,20 +124,16 @@ int download_taurball(struct aur_pkg_t *aurpkg) {
+   }
+ 
+   result = archive_extract_data(&response);
+-
+   if (result != ARCHIVE_EOF) { /* still no error, we have success */
+     cwr_printf(LOG_INFO, "%s%s%s downloaded to %s%s%s\n",
+-        config->strings->pkg, pkgname, config->strings->c_off,
+-        config->strings->uptodate, dir, config->strings->c_off);
++        config->strings->pkg, aurpkg->name, config->strings->c_off,
++        config->strings->uptodate, config->download_dir, config->strings->c_off);
+   } else {
+     cwr_fprintf(stderr, LOG_ERROR, "error downloading stuff\n");
+   }
+ 
+-
+   curl_easy_cleanup(curl);
+   FREE(url);
+-  FREE(dir);
+-  FREE(tarball);
+   FREE(response.data);
+ 
+   return(result);
+@@ -164,10 +145,6 @@ int cower_do_download(alpm_list_t *targets) {
+ 
+   alpm_quick_init();
+ 
+-  if (config->download_dir) {
+-    chdir(config->download_dir);
+-  }
+-
+   for (i = targets; i; i = i->next) {
+     if (alpm_provides_pkg(i->data)) { /* Skip it */
+       continue;
+diff --git a/util.c b/util.c
+index bd2f91e..bb90227 100644
+--- a/util.c
++++ b/util.c
+@@ -380,19 +380,4 @@ alpm_list_t *strsplit(const char *str, const char splitchar) {
+   return(list);
+ }
+ 
+-char *relative_to_absolute_path(const char *relpath) {
+-  if (*relpath == '/') { /* already absolute */
+-    return(strdup(relpath));
+-  }
+-
+-  char *abspath = NULL;
+-
+-  abspath = getcwd(abspath, PATH_MAX + 1);
+-  abspath = strncat(abspath, "/", PATH_MAX - strlen(abspath));
+-  abspath = strncat(abspath, relpath, PATH_MAX - strlen(abspath));
+-
+-  return(abspath);
+-
+-}
+-
+ /* vim: set ts=2 sw=2 et: */
+diff --git a/util.h b/util.h
+index ebf58be..2e18529 100644
+--- a/util.h
++++ b/util.h
+@@ -74,7 +74,6 @@ void print_wrapped(const char*, size_t, int);
+ char *ltrim(char*);
+ char *strtrim(char*);
+ alpm_list_t *strsplit(const char*, const char);
+-char *relative_to_absolute_path(const char*);
+ 
+ #endif /* _COWER_UTIL_H */
+ 
+-- 
+1.7.3.2
+
