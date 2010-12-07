@@ -7,7 +7,7 @@ pkgdesc="Google Chrome pdf Plugin for use with chromium-browser-svn"
 arch=('i686' 'x86_64')
 url="http://dev.chromium.org/getting-involved/dev-channel"
 license=('custom:chrome')
-depends=('chromium-browser-svn')
+depends=('chromium')
 _channel="dev"
 
 case ${_channel} in
