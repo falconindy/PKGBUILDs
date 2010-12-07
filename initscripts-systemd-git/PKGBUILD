@@ -1,7 +1,7 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
 pkgname=initscripts-systemd-git
-pkgver=20100926
+pkgver=20101207
 pkgrel=1
 pkgdesc="System initialization/bootup scripts. Modified for use with systemd."
 arch=('any')
@@ -12,8 +12,6 @@ depends=('systemd' 'kbd' 'coreutils' 'findutils' 'ncurses' 'sysvinit' 'grep' 'ne
 makedepends=('git')
 provides=('initscripts')
 conflicts=('initscripts')
-backup=(etc/rc.conf etc/rc.local etc/rc.local.shutdown)
-install=initscripts-systemd.install
 
 _gitroot="git://github.com/falconindy/initscripts-systemd.git"
 _gitname="initscripts-systemd"
