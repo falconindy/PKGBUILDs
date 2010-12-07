@@ -1,14 +1,14 @@
 # Maintainer: Dave Reisner <d@falconindy.com>
 
 pkgname=systemd
-pkgver=11
-pkgrel=3
+pkgver=15
+pkgrel=4
 pkgdesc="Session and Startup manager"
 arch=('i686' 'x86_64')
 url="http://www.freedesktop.org/wiki/Software/systemd"
 license=('GPL')
-depends=('dbus-systemd' 'dbus-glib' 'kernel26-systemd' 'sysvinit' 'udev-systemd')
-makedepends=('docbook-xsl' 'git' 'gtk2' 'libxslt' 'vala')
+depends=('dbus-core' 'kernel26>=2.6.36' 'sysvinit' 'udev>=164' 'util-linux-ng-git')
+makedepends=('docbook-xsl' 'git' 'libxslt' 'vala-devel')
 optdepends=('gtk2: systemadm GUI'
             'systemd-arch-units: collection of native unit files for Arch daemon/init scripts'
             'initscripts-systemd: native boot and initialization scripts'
@@ -16,10 +16,14 @@ optdepends=('gtk2: systemadm GUI'
             'tcp_wrappers: filter remote access to services')
 groups=('systemd')
 options=(!libtool)
-backup=(etc/systemd/system.conf)
+backup=(etc/systemd/system.conf
+        etc/tmpfiles.d/systemd.conf
+        etc/tmpfiles.d/x11.conf)
 install=systemd.install
-source=("http://www.freedesktop.org/software/$pkgname/$pkgname-$pkgver.tar.bz2")
-md5sums=('aaa06c41cf98f260866a34bd91de7dff')
+source=("http://www.freedesktop.org/software/$pkgname/$pkgname-$pkgver.tar.bz2"
+        "os-release")
+md5sums=('36011aa8593862ca78e3e909f6143570'
+         'f9922299150b4adda7b89e10bca33033')
 
 build() {
   cd "$srcdir/$pkgname-$pkgver"
@@ -27,7 +31,9 @@ build() {
   msg2 "Running autoreconf..."
   autoreconf
   ./configure --prefix=/usr --with-rootdir=/ --sysconfdir=/etc --libexecdir=/usr/lib \
-              --disable-audit
+              --disable-audit --disable-gtk
+
+  # remove --disable-gtk if you want to build systemadm
 
   msg2 "Starting make..."
   make
@@ -36,6 +42,8 @@ build() {
 package() {
   cd "$srcdir/$pkgname-$pkgver"
   make DESTDIR="$pkgdir" install
+
+  install -Dm644 "$srcdir/os-release" "$pkgdir/etc/os-release"
 
   cd "$pkgdir/usr/share/man/man8"
   for manpage in telinit halt reboot poweroff runlevel shutdown; do
