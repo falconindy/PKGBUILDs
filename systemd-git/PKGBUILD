@@ -1,24 +1,30 @@
-# Contributor: Dave Reisner <d@falconindy.com>
+# Maintainer: Dave Reisner <d@falconindy.com>
 
 pkgname=systemd-git
-pkgver=20101004
-pkgrel=1
+pkgver=20101207
+pkgrel=2
 pkgdesc="Session and Startup manager"
 arch=('i686' 'x86_64')
 url="http://www.freedesktop.org/wiki/Software/systemd"
 license=('GPL')
-depends=('dbus-systemd' 'dbus-glib' 'kernel26-systemd' 'sysvinit' 'udev-systemd')
-makedepends=('docbook-xsl' 'git' 'gtk2' 'libxslt' 'vala')
-optdepends=('gtk2: systemadm GUI'
-            'systemd-arch-units: collection of native unit files for Arch daemon/init scripts'
+depends=('dbus-core' 'kernel26>=2.6.36' 'sysvinit' 'udev>=164' 'util-linux-ng-git')
+makedepends=('docbook-xsl' 'git' 'libxslt' 'vala-devel')
+optdepends=('gtk3: systemadm GUI'
+            'libnotify: systemdadm GUI'
             'initscripts-systemd: native boot and initialization scripts'
             'selinux-usr-libselinux: integration with security enhanced Linux'
+            'systemd-arch-units: collection of native unit files for Arch daemon/init scripts'
             'tcp_wrappers: filter remote access to services')
 provides=('systemd')
 conflicts=('systemd')
 groups=('systemd')
 options=(!libtool)
+backup=(etc/systemd/system.conf
+        etc/tmpfiles.d/systemd.conf
+        etc/tmpfiles.d/x11.conf)
 install=systemd.install
+source=("os-release")
+md5sums=('f9922299150b4adda7b89e10bca33033')
 
 _gitroot="git://anongit.freedesktop.org/systemd"
 _gitname="systemd"
@@ -42,8 +48,10 @@ build() {
   git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
   cd "$srcdir/$_gitname-build"
 
-  ./bootstrap.sh --prefix=/usr --libexecdir=/usr/lib \
-    --disable-audit
+  ./autogen.sh --prefix=/usr --libexecdir=/usr/lib \
+    --disable-audit --disable-gtk
+
+  # remove --disable-gtk if you want to build systemadm
 
   make
 }
@@ -51,6 +59,8 @@ build() {
 package() {
   cd "$srcdir/$_gitname-build"
   make DESTDIR="$pkgdir" install
+
+  install -Dm644 "$srcdir/os-release" "$pkgdir/etc/os-release"
 
   cd "$pkgdir/usr/share/man/man8"
   for manpage in telinit halt reboot poweroff runlevel shutdown; do
