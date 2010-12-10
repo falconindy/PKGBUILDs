@@ -1,7 +1,7 @@
-# Contributor: Dave Reisner <d@falconindy.com>
+# Maintainer: Dave Reisner <d@falconindy.com>
 
 pkgname=cower-git
-pkgver=20100828
+pkgver=20101209
 pkgrel=1
 pkgdesc="A simple AUR agent with a pretentious name"
 arch=('i686' 'x86_64')
@@ -33,7 +33,11 @@ build() {
   cp -r "$srcdir/$_gitname" "$srcdir/$_gitname-build"
   cd "$srcdir/$_gitname-build"
 
-  make
+  if readelf -s /usr/lib/libalpm.so | grep -q alpm_find_satisfier; then
+    PMCHECK=-D_HAVE_ALPM_FIND_SATISFIER
+  fi
+
+  make PMCHECK=$PMCHECK
 }
 
 package() {
