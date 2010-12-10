@@ -2,16 +2,14 @@
 
 pkgname=initscripts-systemd-git
 pkgver=20101207
-pkgrel=1
-pkgdesc="System initialization/bootup scripts. Modified for use with systemd."
+pkgrel=2
+pkgdesc="Arch specific systemd initialization/bootup scripts for systemd"
 arch=('any')
 url="http://www.github.com/falconindy/initscripts-systemd"
 license=('GPL')
 groups=('systemd')
 depends=('systemd' 'kbd' 'coreutils' 'findutils' 'ncurses' 'sysvinit' 'grep' 'net-tools')
 makedepends=('git')
-provides=('initscripts')
-conflicts=('initscripts')
 
 _gitroot="git://github.com/falconindy/initscripts-systemd.git"
 _gitname="initscripts-systemd"
