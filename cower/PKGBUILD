@@ -1,26 +1,25 @@
 # Maintainer: Dave Reisner <d@falconindy.com>
 
 pkgname=cower
-pkgver=2.5.4
-pkgrel=2
+pkgver=2.9.8
+pkgrel=1
 pkgdesc="A simple AUR agent with a pretentious name"
 arch=('i686' 'x86_64')
 url="http://github.com/falconindy/cower"
 license=('GPL')
 depends=('curl' 'yajl' 'pacman')
 makedepends=('perl')
-source=("https://github.com/downloads/falconindy/$pkgname/$pkgname-$pkgver.tar.gz"
-        "download-dir-fix.patch")
-md5sums=('b0745e1faec6b9aecbfd000fb9120614'
-         'ab22d8f0ae95600fb9693a026ad665f3')
+source=("https://github.com/downloads/falconindy/$pkgname/$pkgname-$pkgver.tar.gz")
+md5sums=('96c67f55885cdcc77547b2767179e855')
 
 build() {
   cd "$srcdir/$pkgname-$pkgver"
 
-  # fixes -t when used with -ud
-  patch -Np1 < "$srcdir"/download-dir-fix.patch
+  if readelf -s /usr/lib/libalpm.so | grep -q alpm_find_satisfier; then
+    PMCHECK=-D_HAVE_ALPM_FIND_SATISFIER
+  fi
 
-  make
+  make PMCHECK=$PMCHECK
 }
 
 package() {
