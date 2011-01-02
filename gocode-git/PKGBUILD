@@ -1,7 +1,7 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
 pkgname=gocode-git
-pkgver=20100908
+pkgver=20110102
 pkgrel=1
 pkgdesc="An autocompletion/refactoring daemon for the Go programming language (for use in Vim)"
 arch=(i686 x86_64)
@@ -11,6 +11,7 @@ depends=('go-hg')
 provides=('gocode')
 conflicts=('gocode')
 makedepends=('git')
+options=(!strip)
 
 _gitroot="git://github.com/nsf/gocode.git"
 _gitname="gocode"
@@ -19,11 +20,11 @@ build() {
   cd "$srcdir"
   msg "Connecting to GIT server...."
 
-  if [ -d $_gitname ] ; then
-    cd $_gitname && git pull origin
+  if [[ -d $_gitname ]] ; then
+    ( cd "$_gitname" && git pull origin; )
     msg "The local files are updated."
   else
-    git clone $_gitroot $_gitname
+    git clone "$_gitroot" "$_gitname"
   fi
 
   msg "GIT checkout done or server timeout"
@@ -33,15 +34,13 @@ build() {
   git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
   cd "$srcdir/$_gitname-build"
 
-  make || return 1
+  make
 }
 
 package() {
   cd "$srcdir/$_gitname-build"
-  install -m755 -D gocode "$pkgdir/usr/bin/gocode"
 
-  cd vim
-  install -m644 -D autoload/gocomplete.vim "$pkgdir/usr/share/vim/vimfiles/autoload/gocomplete.vim"
-  install -m644 -D ftplugin/go.vim "$pkgdir/usr/share/vim/vimfiles/ftplugin/go.vim"
-  install -m644 -D plugin/gocode.vim "$pkgdir/usr/share/vim/vimfiles/plugin/gocode.vim" 
+  install -Dm755 gocode "$pkgdir/usr/bin/gocode"
+  install -Dm644 vim/autoload/gocomplete.vim "$pkgdir/usr/share/vim/vimfiles/autoload/gocomplete.vim"
+  install -Dm644 vim/ftplugin/go.vim "$pkgdir/usr/share/vim/vimfiles/ftplugin/go.vim"
 }
