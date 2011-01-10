@@ -1,19 +1,19 @@
 # Maintainer: Dave Reisner <d@falconindy.com>
 
 pkgname=systemd
-pkgver=15
-pkgrel=4
+pkgver=16
+pkgrel=3
 pkgdesc="Session and Startup manager"
 arch=('i686' 'x86_64')
 url="http://www.freedesktop.org/wiki/Software/systemd"
-license=('GPL')
+license=('GPL2')
 depends=('dbus-core' 'kernel26>=2.6.36' 'sysvinit' 'udev>=164' 'util-linux-ng-git')
-makedepends=('docbook-xsl' 'git' 'libxslt' 'vala-devel')
-optdepends=('gtk2: systemadm GUI'
-            'systemd-arch-units: collection of native unit files for Arch daemon/init scripts'
+makedepends=('docbook-xsl' 'libxslt')
+optdepends=('systemd-arch-units: collection of native unit files for Arch daemon/init scripts'
             'initscripts-systemd: native boot and initialization scripts'
             'selinux-usr-libselinux: integration with security enhanced Linux'
             'tcp_wrappers: filter remote access to services')
+provides=('readaheadd=1.5.7')
 groups=('systemd')
 options=(!libtool)
 backup=(etc/systemd/system.conf
@@ -22,7 +22,7 @@ backup=(etc/systemd/system.conf
 install=systemd.install
 source=("http://www.freedesktop.org/software/$pkgname/$pkgname-$pkgver.tar.bz2"
         "os-release")
-md5sums=('36011aa8593862ca78e3e909f6143570'
+md5sums=('bcc6e0acf58e1b19c1eb2e417bce32bf'
          'f9922299150b4adda7b89e10bca33033')
 
 build() {
@@ -30,10 +30,16 @@ build() {
 
   msg2 "Running autoreconf..."
   autoreconf
+
+  # we don't build the gtk tools right now because the dependencies
+  # aren't worth the "reward". If you really want to build them,
+  # you'll need gtk3, libnotify>=0.7, and vala-devel. Don't forget
+  # to remove the --disable-gtk flag
+  # TODO: as of systemd-16, vala 0.10 and libnotify 0.5 are supported
+
+  msg2 "Configuring..."
   ./configure --prefix=/usr --with-rootdir=/ --sysconfdir=/etc --libexecdir=/usr/lib \
               --disable-audit --disable-gtk
-
-  # remove --disable-gtk if you want to build systemadm
 
   msg2 "Starting make..."
   make
@@ -44,9 +50,13 @@ package() {
   make DESTDIR="$pkgdir" install
 
   install -Dm644 "$srcdir/os-release" "$pkgdir/etc/os-release"
+  install -d755 "$pkgdir/etc/modules-load.d"
+
+  echo "d /var/run/console 755 root root" > "$pkgdir/etc/tmpfiles.d/console.conf"
 
   cd "$pkgdir/usr/share/man/man8"
   for manpage in telinit halt reboot poweroff runlevel shutdown; do
     mv "$manpage.8" "systemd.$manpage.8"
   done
 }
+
