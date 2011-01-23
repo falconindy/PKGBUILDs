@@ -1,0 +1,27 @@
+#!/bin/sh
+
+units="arch-persistent-settings.service
+       arch-daemons.target
+       depmod.service
+       rc-local.service
+       nisdomainname.service
+       md-assemble.service
+       lvm-activate.service"
+
+post_install() {
+  /bin/systemctl enable $units
+  post_upgrade
+
+  # prime the /etc/rc.conf linkages
+  /lib/systemd/arch-persistent-settings
+}
+
+post_upgrade() {
+  /bin/systemctl daemon-reload
+}
+
+pre_remove() {
+  /bin/systemctl disable $units
+  post_upgrade
+}
+

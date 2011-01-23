@@ -1,15 +1,16 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
 pkgname=initscripts-systemd-git
-pkgver=20101207
-pkgrel=2
+pkgver=20110123
+pkgrel=1
 pkgdesc="Arch specific systemd initialization/bootup scripts for systemd"
 arch=('any')
 url="http://www.github.com/falconindy/initscripts-systemd"
 license=('GPL')
 groups=('systemd')
-depends=('systemd' 'kbd' 'coreutils' 'findutils' 'ncurses' 'sysvinit' 'grep' 'net-tools')
+depends=('systemd' 'initscripts')
 makedepends=('git')
+install=initscripts-systemd.install
 
 _gitroot="git://github.com/falconindy/initscripts-systemd.git"
 _gitname="initscripts-systemd"
@@ -35,5 +36,5 @@ build() {
 package() {
   cd "$srcdir/$_gitname-build"
 
-  make DESTDIR=$pkgdir/ install
+  make DESTDIR="$pkgdir" install
 }
