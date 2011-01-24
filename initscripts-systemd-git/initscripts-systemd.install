@@ -12,7 +12,8 @@ post_install() {
   /bin/systemctl enable $units
   post_upgrade
 
-  # prime the /etc/rc.conf linkages
+  # we do this here explicitly so that there isn't a lagtime of an extra reboot
+  # before the gluework to /etc/rc.conf goes into effect
   /lib/systemd/arch-persistent-settings
 }
 
@@ -25,3 +26,6 @@ pre_remove() {
   post_upgrade
 }
 
+post_remove() {
+  rm -f /etc/{modprobe,modules-load}.d/rc.conf
+}
