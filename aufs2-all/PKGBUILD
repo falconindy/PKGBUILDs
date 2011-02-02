@@ -2,8 +2,8 @@
 
 pkgname=aufs2-all
 _pkgbase=aufs2
-pkgver=2.6.35_20100802
-pkgrel=2
+pkgver=2.6.37_20110105 
+pkgrel=1
 pkgdesc="Another Unionfs Implementation. Builds modules for all detected kernels"
 arch=('i686' 'x86_64')
 url="http://aufs.sourceforge.net/"
@@ -14,7 +14,7 @@ provides=('aufs2')
 install=aufs2.install
 source=(ftp://ftp.archlinux.org/other/aufs2/${_pkgbase}-${pkgver}.tar.gz)
 options=('!makeflags')
-md5sums=('e0b3f5709e1cb746fdfa43047354ad4d')
+md5sums=('630c9c36bd4c0aa75a12b9bfa01ef8ee')
 
 build() {
   cd ${srcdir}/${_pkgbase}-${pkgver}
@@ -34,8 +34,8 @@ build() {
     msg2 "Building module for $_kernver..."
 
     # KDIR is necessary even when cleaning
-    make KDIR=/usr/src/linux-${_kernver} clean
-    make KDIR=/usr/src/linux-${_kernver}
+    make clean KDIR=/usr/src/linux-${_kernver}
+    make aufs.ko KDIR=/usr/src/linux-${_kernver}
 
     install -D -m644 fs/aufs/aufs.ko $pkgdir/lib/modules/${_kernver}/kernel/fs/aufs/aufs.ko
 
