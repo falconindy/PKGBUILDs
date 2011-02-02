@@ -4,7 +4,7 @@
 # Contributor: Andres Perera <aepd87@gmail.com>
 
 pkgname=pacman-git
-pkgver=20101220
+pkgver=20101221
 pkgrel=1
 pkgdesc="A library-based package manager with dependency support. git version."
 arch=('i686' 'x86_64')
@@ -16,7 +16,6 @@ makedepends=('git' 'asciidoc')
 optdepends=('fakeroot: for makepkg usage as normal user'
             'curl: for rankmirrors usage')
 backup=(etc/pacman.conf etc/makepkg.conf)
-install=pacman.install
 conflicts=('pacman')
 provides=('pacman')
 options=(!libtool)
@@ -48,7 +47,8 @@ build() {
   cd $_gitname-build
 
   ./autogen.sh
-  ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --enable-doc
+  ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --enable-doc \
+    --enable-git-version
   make
 }
 
