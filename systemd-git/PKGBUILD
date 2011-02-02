@@ -1,15 +1,16 @@
 # Maintainer: Dave Reisner <d@falconindy.com>
 
 pkgname=systemd-git
-pkgver=20110110
+pkgver=20110122
 pkgrel=1
 pkgdesc="Session and Startup manager"
 arch=('i686' 'x86_64')
 url="http://www.freedesktop.org/wiki/Software/systemd"
 license=('GPL2')
-depends=('dbus-core' 'kernel26>=2.6.36' 'sysvinit' 'udev>=164' 'util-linux-ng-git')
-makedepends=('docbook-xsl' 'git' 'libxslt')
+depends=('dbus-core' 'initscripts' 'kernel26>=2.6.36' 'sysvinit' 'udev' 'util-linux>=0.19')
+makedepends=('docbook-xsl' 'git' 'libxslt' 'cryptsetup')
 optdepends=('initscripts-systemd: native boot and initialization scripts'
+            'cryptsetup: required for encrypted block devices'
             'selinux-usr-libselinux: integration with security enhanced Linux'
             'systemd-arch-units: collection of native unit files for Arch daemon/init scripts'
             'tcp_wrappers: filter remote access to services')
@@ -46,11 +47,6 @@ build() {
   git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
   cd "$srcdir/$_gitname-build"
 
-  # we don't build the gtk tools right now because the dependencies
-  # aren't worth the "reward". If you really want to build them,
-  # you'll need gtk3, libnotify>=0.5, and vala>=0.10. Don't forget
-  # to remove the --disable-gtk flag
-
   ./autogen.sh --prefix=/usr --libexecdir=/usr/lib \
     --disable-audit --disable-gtk
 
@@ -62,7 +58,7 @@ package() {
   make DESTDIR="$pkgdir" install
 
   install -Dm644 "$srcdir/os-release" "$pkgdir/etc/os-release"
-  install -d755 "$pkgdir/etc/modules-load.d"
+  install -dm755 "$pkgdir/etc/modules-load.d"
 
   cd "$pkgdir/usr/share/man/man8"
   for manpage in telinit halt reboot poweroff runlevel shutdown; do
