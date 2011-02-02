@@ -1,7 +1,7 @@
 # Maintainer: Dave Reisner <d@falconindy.com>
 
 pkgname=cower-git
-pkgver=20101209
+pkgver=20110129
 pkgrel=1
 pkgdesc="A simple AUR agent with a pretentious name"
 arch=('i686' 'x86_64')
@@ -20,10 +20,10 @@ build() {
   msg "Connecting to GIT server...."
 
   if [[ -d $_gitname ]] ; then
-    cd $_gitname && git pull origin
+    cd "$_gitname" && git pull origin
     msg "The local files are updated."
   else
-    git clone $_gitroot $_gitname
+    git clone "$_gitroot" "$_gitname"
   fi
 
   msg "GIT checkout done or server timeout"
@@ -33,15 +33,18 @@ build() {
   cp -r "$srcdir/$_gitname" "$srcdir/$_gitname-build"
   cd "$srcdir/$_gitname-build"
 
-  if readelf -s /usr/lib/libalpm.so | grep -q alpm_find_satisfier; then
-    PMCHECK=-D_HAVE_ALPM_FIND_SATISFIER
-  fi
+  readelf -s /usr/lib/libalpm.so | grep -q alpm_find_satisfier &&
+    PMCHECK="-D_HAVE_ALPM_FIND_SATISFIER"
 
-  make PMCHECK=$PMCHECK
+  readelf -s /usr/lib/libalpm.so | grep -q alpm_db_register_local &&
+    PMCHECK+=" -D_HAVE_ALPM_DB_REGISTER_LOCAL"
+
+  make PMCHECK="$PMCHECK"
 }
 
 package() {
   cd "$srcdir/$_gitname-build"
+
   make PREFIX=/usr DESTDIR="$pkgdir" install
 }
 
