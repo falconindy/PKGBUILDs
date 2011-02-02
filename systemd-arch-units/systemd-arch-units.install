@@ -1,6 +1,5 @@
 ## arg 1:  the new package version
 post_install() {
-  systemctl --system daemon-reload
   cat << EOF
 -- NOTICE --------------------------------------------------------------------------
 All unit files have been installed to /lib/systemd/system. This only allows systemd
@@ -9,16 +8,13 @@ to be aware of them. It will not register them for automatic activation on boot.
 ------------------------------------------------------------------------------------
 EOF
 
+  # this might be installed at the same time as systemd which means that it's
+  # not running yet. the daemon-reload call will fail with a bogus error.
+  post_upgrade 2>/dev/null
 }
 
-## arg 1:  the new package version
-## arg 2:  the old package version
 post_upgrade() {
-  post_install
-}
-
-## arg 1:  the old package version
-post_remove() {
+  # forces a reload of all known units
   systemctl --system daemon-reload
 }
 
