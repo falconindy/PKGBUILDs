@@ -1,15 +1,21 @@
-#!/bin/sh
+#!/bin/bash
 
-units="arch-persistent-settings.service
-       arch-daemons.target
-       depmod.service
-       rc-local.service
-       nisdomainname.service
-       md-assemble.service
-       lvm-activate.service"
+declare -l USELVM USEMDADM
+
+. /etc/rc.conf
+
+units=('arch-persistent-settings.service'
+       'arch-daemons.target'
+       'depmod.service'
+       'rc-local.service'
+       'nisdomainname.service')
 
 post_install() {
-  [ "/bin/systemd" = "$(ps hp 1 o command)" ] && /bin/systemctl enable $units
+  [[ "$USELVM" = yes ]] && units+=("lvm.service")
+  [[ "$USEMDADM" = yes ]] && units+=("mdadm.service")
+
+  /bin/systemctl enable "${units[@]}"
+
   post_upgrade
 
   # we do this here explicitly so that there isn't a lagtime of an extra reboot
@@ -18,11 +24,20 @@ post_install() {
 }
 
 post_upgrade() {
-  [ "/bin/systemd" = "$(ps hp 1 o command)" ] && /bin/systemctl daemon-reload
+  if ps -C systemd >/dev/null 2>&1; then
+    /bin/systemctl daemon-reload
+  else
+    return 0
+  fi
 }
 
 pre_remove() {
-  [ "/bin/systemd" = "$(ps hp 1 o command)" ] && /bin/systemctl disable $units
+  if ps -C systemd >/dev/null 2>&1; then
+    /bin/systemctl disable $units
+  else
+    return 0
+  fi
+
   post_upgrade
 }
 
