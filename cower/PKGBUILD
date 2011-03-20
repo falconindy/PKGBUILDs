@@ -2,7 +2,7 @@
 
 pkgname=cower
 pkgver=3.0.0
-pkgrel=1
+pkgrel=2
 pkgdesc="A simple AUR agent with a pretentious name"
 arch=('i686' 'x86_64')
 url="http://github.com/falconindy/cower"
@@ -19,14 +19,13 @@ build() {
 
   readelf -s /usr/lib/libalpm.so | grep -q alpm_find_satisfier &&
     PMCHECK="-D_HAVE_ALPM_FIND_SATISFIER"
-
-  # allan broke it
   readelf -s /usr/lib/libalpm.so | grep -q [^_]alpm_db_register_local &&
     PMCHECK+=" -D_HAVE_ALPM_DB_REGISTER_LOCAL"
 
+  # one of these days i'll stop making brown bag releases
   cp "$srcdir/config" .
 
-  make PMCHECK=$PMCHECK
+  make PMCHECK="$PMCHECK"
 }
 
 package() {
