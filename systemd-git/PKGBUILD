@@ -1,7 +1,7 @@
 # Maintainer: Dave Reisner <d@falconindy.com>
 
 pkgname=systemd-git
-pkgver=20110320
+pkgver=20110422
 pkgrel=1
 pkgdesc="Session and Startup manager"
 arch=('i686' 'x86_64')
@@ -10,6 +10,7 @@ license=('GPL2')
 depends=('dbus-core' 'initscripts' 'kernel26>=2.6.36' 'sysvinit' 'udev' 'util-linux>=2.19')
 makedepends=('docbook-xsl' 'git' 'libxslt' 'cryptsetup')
 optdepends=('cryptsetup: required for encrypted block devices'
+            'dbus-python: systemd-analyze'
             'initscripts-systemd-git: native boot and initialization scripts'
             'selinux-usr-libselinux: integration with security enhanced Linux'
             'systemd-arch-units-git: collection of native unit files for Arch daemon/init scripts'
@@ -61,6 +62,9 @@ package() {
 
   # install target doesn't bring in plymouth units
   install -m644 units/plymouth-* "$pkgdir/lib/systemd/system"
+
+  # fix systemd-analyze for python2
+  sed -i '1s/python$/python2/' "$pkgdir/usr/bin/systemd-analyze"
 
   # rename man pages to avoid conflicts with sysvinit
   install -Dm644 "$srcdir/os-release" "$pkgdir/etc/os-release"
