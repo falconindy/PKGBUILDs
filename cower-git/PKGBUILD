@@ -1,7 +1,7 @@
 # Maintainer: Dave Reisner <d@falconindy.com>
 
 pkgname=cower-git
-pkgver=20110323
+pkgver=20110424
 pkgrel=1
 pkgdesc="A simple AUR agent with a pretentious name"
 arch=('i686' 'x86_64')
@@ -16,7 +16,6 @@ _gitroot="git://github.com/falconindy/cower.git"
 _gitname="cower"
 
 build() {
-  cd "$srcdir"
   msg "Connecting to GIT server...."
 
   if [[ -d $_gitname ]] ; then
@@ -37,9 +36,7 @@ build() {
 }
 
 package() {
-  cd "$srcdir/$_gitname-build"
-
-  make PREFIX=/usr DESTDIR="$pkgdir" install
+  make -C "$srcdir/$_gitname-build" PREFIX=/usr DESTDIR="$pkgdir" install
 }
 
 # vim: ft=sh syn=sh et

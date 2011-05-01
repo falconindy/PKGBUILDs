@@ -1,15 +1,17 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
-pkgname=systemd-arch-units
-pkgver=20110211
+pkgname=systemd-arch-units-git
+pkgver=20110420
 pkgrel=1
 pkgdesc="Arch specific Systemd unit files"
 arch=('any')
 url="http://github.com/falconindy/systemd-arch-units"
 license=('MIT')
-depends=('systemd')
+depends=('systemd-git')
 makedepends=('git')
 groups=('systemd')
+provides=('systemd-arch-units')
+conflicts=('systemd-arch-units')
 install=systemd-arch-units.install
 
 _gitroot="git://github.com/falconindy/systemd-arch-units.git"

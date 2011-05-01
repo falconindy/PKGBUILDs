@@ -1,13 +1,13 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
 pkgname=gocode-git
-pkgver=20110102
+pkgver=20110409
 pkgrel=1
 pkgdesc="An autocompletion/refactoring daemon for the Go programming language (for use in Vim)"
 arch=(i686 x86_64)
 url="http://github.com/nsf/gocode"
 license=('GPL')
-depends=('go-hg')
+depends=('go-weekly')
 provides=('gocode')
 conflicts=('gocode')
 makedepends=('git')
