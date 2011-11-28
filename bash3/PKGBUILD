@@ -4,7 +4,7 @@
 pkgname=bash3
 _patchlevel=051
 pkgver=3.2.$_patchlevel
-pkgrel=2
+pkgrel=3
 pkgdesc="The GNU Bourne Again shell. Version 3.2. Binary and manpage only."
 arch=('i686' 'x86_64')
 license=('GPL')
@@ -49,6 +49,12 @@ build() {
   ./configure --prefix=/usr --with-curses --enable-readline \
     --without-bash-malloc --with-installed-readline
   make
+}
+
+check() {
+  cd "$srcdir/bash-3.2"
+
+  make check
 }
 
 package() {
