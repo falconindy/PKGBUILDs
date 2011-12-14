@@ -1,19 +1,19 @@
 # Maintainer: Dave Reisner <d@falconindy.com>
 
-pkgname=libkmod-git
-pkgver=20111202
+pkgname=kmod-git
+pkgver=20111213
 pkgrel=1
 pkgdesc="interface to kernel module operations"
 arch=('i686' 'x86_64')
-url="http://git.profusion.mobi/cgit.cgi/lucas/libkmod/"
+url="http://git.profusion.mobi/cgit.cgi/lucas/kmod/"
 license=('GPL2')
 depends=('glibc')
 makedepends=('git')
-conflicts=('libkmod')
-provides=('libkmod')
+conflicts=('kmod')
+provides=('kmod')
 
-_gitroot="git://git.profusion.mobi/users/lucas/libkmod.git"
-_gitname="libkmod"
+_gitroot="git://git.profusion.mobi/users/lucas/kmod.git"
+_gitname="kmod"
 
 build() {
   msg "Connecting to GIT server...."
