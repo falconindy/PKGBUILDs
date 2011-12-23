@@ -1,13 +1,13 @@
 # Maintainer: Dave Reisner <d@falconindy.com>
 
 pkgname=kmod-git
-pkgver=20111215
+pkgver=20111222
 pkgrel=1
 pkgdesc="interface to kernel module operations"
 arch=('i686' 'x86_64')
 url="http://git.profusion.mobi/cgit.cgi/lucas/kmod/"
 license=('GPL2')
-depends=('glibc')
+depends=('glibc' 'zlib')
 makedepends=('git')
 conflicts=('kmod')
 provides=('kmod')
@@ -33,7 +33,10 @@ build() {
   cp -r "$srcdir/$_gitname" "$srcdir/$_gitname-build"
   cd "$srcdir/$_gitname-build"
 
-  ./autogen.sh
+  ./autogen.sh \
+    --enable-zlib \
+    --with-libdir=/usr/lib \
+    --with-rootlibdir=/lib
   make
 }
 
