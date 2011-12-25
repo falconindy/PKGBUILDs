@@ -115,6 +115,7 @@ package_pacman-contrib-git() {
     pacscripts
     pacsearch
     paclog-pkglist
+    pacsysclean
   )
 
   cd "$srcdir/$_gitname-build/contrib"
