@@ -14,7 +14,7 @@ url="http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html"
 license=('GPL')
 groups=('base')
 options=('!makeflags' '!libtool')
-depends=('util-linux' 'libusb-compat' 'glib2' 'module-init-tools' 'pciutils')
+depends=('util-linux' 'libusb-compat' 'glib2' 'module-init-tools' 'pciutils' 'kmod-git')
 makedepends=('git' 'gobject-introspection' 'gperf' 'gtk-doc')
 conflicts=('udev')
 provides=('udev')
@@ -42,10 +42,7 @@ build() {
   cp -r "$srcdir/$_gitname" "$srcdir/$_gitname-build"
   cd "$srcdir/$_gitname-build"
 
-  # do this manually -- kay forces silly flags like seloonix in autogen.sh
-  gtkdocize
-  autoreconf --install --symlink
-
+  ./autogen.sh
   ./configure \
       --sysconfdir=/etc \
       --with-rootlibdir=/lib \
