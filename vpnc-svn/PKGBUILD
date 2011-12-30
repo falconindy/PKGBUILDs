@@ -2,7 +2,7 @@
 # Contributor: Ray Kohler <ataraxia937 at gmail dot com>
 
 pkgname=vpnc-svn
-pkgver=472
+pkgver=481
 pkgrel=1
 pkgdesc="VPN client for Cisco and Nortel VPN Concentrators - SVN trunk build"
 arch=('i686' 'x86_64')
