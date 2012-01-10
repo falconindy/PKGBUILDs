@@ -1,7 +1,7 @@
 # Maintainer: Dave Reisner <d@falconindy.com>
 
 pkgname=kmod-git
-pkgver=20111226
+pkgver=20120109
 pkgrel=1
 pkgdesc="interface to kernel module operations"
 arch=('i686' 'x86_64')
@@ -9,9 +9,13 @@ url="http://git.profusion.mobi/cgit.cgi/kmod.git/"
 license=('GPL2')
 depends=('glibc' 'zlib')
 makedepends=('git')
-conflicts=('kmod')
-provides=('kmod')
+conflicts=('kmod' 'module-init-tools')
+provides=('kmod=3' 'module-init-tools=3.16')
+replaces=('module-init-tools')
 options=('!libtool')
+backup=('lib/depmod.d/search.conf')
+source=('depmod-search.conf')
+md5sums=('4b8cbcbc54b9029c99fd730e257d4436')
 
 _gitroot="git://git.profusion.mobi/kmod.git"
 _gitname="kmod"
@@ -20,7 +24,7 @@ build() {
   msg "Connecting to GIT server...."
 
   if [[ -d $_gitname ]] ; then
-    cd "$_gitname" && git pull origin
+    ( cd "$_gitname" && git pull origin )
     msg "The local files are updated."
   else
     git clone "$_gitroot" "$_gitname"
@@ -29,22 +33,42 @@ build() {
   msg "GIT checkout done or server timeout"
   msg "Starting make..."
 
-  rm -rf "$srcdir/$_gitname-build"
-  cp -r "$srcdir/$_gitname" "$srcdir/$_gitname-build"
-  cd "$srcdir/$_gitname-build"
+  rm -rf "$_gitname-build"
+  cp -r "$_gitname"{,-build}
+  cd "$_gitname-build"
 
-  ./autogen.sh \
+  ./autogen.sh
+  ./configure \
+    --sysconfdir=/etc \
+    --enable-debug \
+    --with-rootprefix= \
     --with-rootlibdir=/lib \
     --with-zlib
+
   make
 }
 
 check() {
-  make -C "$srcdir/$_gitname-build" check
+  make -C "$_gitname-build" check
 }
 
 package() {
-  make -C "$srcdir/$_gitname-build" DESTDIR="$pkgdir" install
+  make -C "$_gitname-build" DESTDIR="$pkgdir" install
+
+  # binary directories
+  install -dm755 "$pkgdir"/{,s}bin
+
+  # configuration directories
+  install -dm755 "$pkgdir"/{etc,lib}/{depmod,modprobe}.d
+
+  # add symlinks to kmod
+  ln -s /usr/bin/kmod "$pkgdir/bin/lsmod"
+  for tool in {ins,rm,dep}mod mod{info,probe}; do
+    ln -s ../usr/bin/kmod "$pkgdir/sbin/$tool"
+  done
+
+  # install depmod.d file for search/ dir
+  install -Dm644 "$srcdir/depmod-search.conf" "$pkgdir/lib/depmod.d/search.conf"
 }
 
 # vim: ft=sh syn=sh et
