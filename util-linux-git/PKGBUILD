@@ -1,7 +1,7 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
 pkgname=util-linux-git
-pkgver=20111118
+pkgver=20120113
 pkgrel=1
 pkgdesc="Miscellaneous system utilities for Linux - the GIT version"
 url="http://userweb.kernel.org/~kzak/util-linux/"
@@ -9,8 +9,8 @@ arch=('i686' 'x86_64')
 license=('GPL2')
 depends=('bash' 'zlib')
 makedepends=('git')
-provides=('util-linux-ng=2.20.1' 'util-linux=2.20.1')
-conflicts=('util-linux' 'util-linux-ng')
+provides=('util-linux-ng=2.21' 'util-linux=2.21')
+conflicts=('util-linux-ng' 'util-linux')
 replaces=('util-linux-ng')
 options=('!libtool')
 optdepends=('perl: for chkdupexe support')
@@ -19,7 +19,6 @@ _gitroot="git://git.kernel.org/pub/scm/utils/util-linux/util-linux.git"
 _gitname="util-linux"
 
 build() {
-  cd "$srcdir"
   msg "Connecting to GIT server...."
 
   if [[ -d $_gitname ]] ; then
@@ -32,23 +31,29 @@ build() {
   msg "GIT checkout done or server timeout"
 
   rm -rf "$srcdir/$_gitname-build"
-  git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
+  git clone "$srcdir/$_gitname"{,-build}
   cd "$srcdir/$_gitname-build"
 
+  # alter location of adjtime file for FHS
   sed -e 's@etc/adjtime@var/lib/hwclock/adjtime@' -i hwclock/hwclock.c
 
-  msg "Starting configure..."
+  msg "Configuring..."
   ./autogen.sh
-  ./configure --enable-arch --enable-write --enable-raw --disable-wall --enable-partx \
-    --enable-libmount-mount
+  ./configure \
+      --enable-write \
+      --enable-raw \
+      --disable-wall \
+      --enable-partx \
+      --enable-new-mount
 
+  msg "Starting make..."
   make
 }
 
 package() {
-  cd "$srcdir/$_gitname-build"
+  make -C "$_gitname-build" DESTDIR="$pkgdir" install
 
-  make DESTDIR="${pkgdir}" install
-  install -dm755 "${pkgdir}/var/lib/hwclock"
+  # create adjtime file's dir
+  install -dm755 "$pkgdir/var/lib/hwclock"
 }
 
