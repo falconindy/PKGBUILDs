@@ -1,0 +1,73 @@
+# Maintainer: Dave Reisner <dreisner@archlinux.org>
+# Contributor: Phillipe Smith <phillipe@archlinux.com.br>
+
+pkgname=lxdm-git
+pkgver=20120220
+pkgrel=1
+pkgdesc='Lightweight Display Manager (part of LXDE)'
+arch=('i686' 'x86_64')
+url="http://blog.lxde.org/?p=531"
+license=('GPL')
+groups=('lxde')
+provides=('lxdm')
+conflicts=('lxdm' 'lxdm-svn')
+depends=('cairo' 'consolekit' 'dbus-core' 'gdk-pixbuf2' 'glib2' 'gtk2' 'libx11' 'libxcb' 'pango')
+makedepends=('intltool' 'git')
+backup=('etc/lxdm/lxdm.conf')
+install=lxdm.install
+source=('Xsession.patch'
+        'lxdm.pam'
+        'lxdm.patch'
+        'arch-dark-theme.tar.gz')
+md5sums=('9bdf95adb74d81d4b6b6176fb1142090'
+         'b20fe3c8487a039050986d60e45233a9'
+         'baed9055e8825a5511712bc095197519'
+         '0cc1eeb79300a982bea2f9bea79c1b06')
+
+_gitroot="git://lxde.git.sourceforge.net/gitroot/lxde/lxdm"
+_gitname="lxdm"
+
+build() {
+  msg "Connecting to GIT server...."
+
+  if [[ -d $_gitname ]] ; then
+    cd $_gitname && git pull origin
+    msg "The local files are updated."
+  else
+    git clone $_gitroot
+  fi
+
+  msg "GIT checkout done or server timeout"
+  msg "Starting make..."
+
+  rm -rf "$srcdir/$_gitname-build"
+  git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
+  cd "$srcdir/$_gitname-build"
+
+  ./autogen.sh
+  ./configure \
+      --sysconfdir=/etc \
+      --prefix=/usr \
+      --libexecdir=/usr/lib/lxdm
+
+  make
+
+  patch -Np0 <"$srcdir"/lxdm.patch
+  patch -Np0 <"$srcdir"/Xsession.patch
+
+  # Removing chown from data/Makefile and adding it to lxdm.install
+  sed -i '/chown\ root:lxdm/d' "$srcdir/lxdm-build/data/Makefile"
+}
+
+package() {
+  cd "$srcdir/$_gitname-build"
+
+  make DESTDIR="$pkgdir" install
+
+  install -m644 "$srcdir/lxdm.pam" "$pkgdir/etc/pam.d/lxdm"
+
+  cp -dpr --no-preserve=ownership "$srcdir/Arch-Dark" "$pkgdir/usr/share/lxdm/themes"
+
+  # Setting Arch-Dark theme the default LXDM theme
+  sed 's/Industrial/Arch-Dark/' -i ${pkgdir}/etc/lxdm/lxdm.conf
+}
