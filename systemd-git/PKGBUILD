@@ -1,25 +1,25 @@
 # Maintainer: Dave Reisner <dreisner@archlinux.org>
 
 pkgname=systemd-git
-pkgver=20120320
-pkgrel=1
-pkgdesc="Session and Startup manager"
+pkgver=20120404
+pkgrel=2
+pkgdesc="system and service manager"
 arch=('i686' 'x86_64')
 url="http://www.freedesktop.org/wiki/Software/systemd"
 license=('GPL2')
 depends=('acl' 'dbus' 'dbus-core' 'kbd' 'kmod' 'libcap' 'pam' 'udev' 'util-linux' 'xz')
-makedepends=('cryptsetup' 'docbook-xsl' 'git' 'gperf' 'intltool' 'libxslt'
-             'linux-api-headers')
+makedepends=('cryptsetup' 'docbook-xsl' 'git' 'gobject-introspection' 'gperf'
+             'gtk-doc' 'intltool' 'libxslt')
 optdepends=('cryptsetup: required for encrypted block devices'
             'dbus-python: systemd-analyze'
             'initscripts: legacy hostname, locale, and vconsole support'
             'selinux-usr-libselinux: integration with security enhanced Linux'
             'systemd-arch-units-git: collection of native unit files for Arch daemon/init scripts'
             'tcp_wrappers: filter remote access to services')
-provides=('systemd' 'libsystemd')
-conflicts=('systemd' 'libsystemd')
+provides=('systemd' 'libsystemd' 'udev=182')
+conflicts=('systemd' 'libsystemd' 'udev')
 groups=('systemd')
-options=(!libtool)
+options=('!libtool')
 backup=(etc/dbus-1/system.d/org.freedesktop.systemd1.conf
         etc/dbus-1/system.d/org.freedesktop.hostname1.conf
         etc/dbus-1/system.d/org.freedesktop.login1.conf
@@ -27,11 +27,20 @@ backup=(etc/dbus-1/system.d/org.freedesktop.systemd1.conf
         etc/dbus-1/system.d/org.freedesktop.timedate1.conf
         etc/systemd/system.conf
         etc/systemd/user.conf
-        etc/systemd/systemd-logind.conf
-        etc/systemd/systemd-journald.conf)
-install=systemd.install
-source=('os-release')
-md5sums=('752636def0db3c03f121f8b4f44a63cd')
+        etc/systemd/logind.conf
+        etc/systemd/journald.conf
+        etc/udev/udev.conf)
+install='systemd.install'
+source=('os-release'
+        'initcpio-hooks-udev'
+        'initcpio-install-udev'
+        0001-udev-support-reading-from-split-usr-setup.patch
+        0002-reinstate-TIMEOUT-handling.patch)
+md5sums=('752636def0db3c03f121f8b4f44a63cd'
+         'a4dd853050bf2e0ae6b2e3d2c75499c2'
+         'd2b16edc6d806b5dafdbbad43ae5a3de'
+         'b2f1827cfe9035df20b2a05550f35188'
+         'f6f942e0241b848763cad7bfd00f6757')
 
 _gitroot="git://anongit.freedesktop.org/systemd/systemd.git"
 _gitname="systemd"
@@ -53,15 +62,19 @@ build() {
   git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
   cd "$srcdir/$_gitname-build"
 
+  patch -Np1 <"$srcdir/0001-udev-support-reading-from-split-usr-setup.patch"
+  patch -Np1 <"$srcdir/0002-reinstate-TIMEOUT-handling.patch"
+
   ./autogen.sh
-  ./configure --with-rootprefix= \
-              --with-pamlibdir=/lib/security \
-              --libdir=/usr/lib \
-              --libexecdir=/usr/lib \
+  ./configure --libexecdir=/usr/lib \
               --localstatedir=/var \
               --sysconfdir=/etc \
+              --enable-split-usr \
               --disable-audit \
-              --with-distro=arch
+              --with-pamlibdir=/lib/security \
+              --with-distro=arch \
+              --with-sysvinit-path= \
+              --with-sysvrcd-path=
 
   make
 }
@@ -79,7 +92,9 @@ package() {
     src/sd-daemon.[ch] \
     src/readahead/sd-readahead.[ch]
 
-  ln -s ../lib/systemd/systemd "$pkgdir/bin/systemd"
+  install -dm755 "$pkgdir/bin" "$pkgdir/lib/systemd"
+  ln -s ../usr/lib/systemd/systemd "$pkgdir/bin/systemd"
+  ln -s ../../usr/lib/systemd/systemd "$pkgdir/lib/systemd/systemd"
 
   # fix systemd-analyze for python2
   sed -i '1s/python$/python2/' "$pkgdir/usr/bin/systemd-analyze"
@@ -98,4 +113,23 @@ package() {
     IFS='/' read section page <<< "$manpage"
     mv "$manpage" "$section/systemd.$page"
   done
+
+  # move bash-completion and symlink for loginctl
+  install -Dm644 "$pkgdir/etc/bash_completion.d/systemd-bash-completion.sh" \
+    "$pkgdir/usr/share/bash-completion/completions/systemctl"
+  ln -s systemctl "$pkgdir/usr/share/bash-completion/completions/loginctl"
+  rm -rf "$pkgdir/etc/bash_completion.d"
+
+  # the path to udevadm is hardcoded in some places
+  install -d "$pkgdir/sbin"
+  ln -s ../usr/bin/udevadm "$pkgdir/sbin/udevadm"
+
+  # Replace dialout/tape/cdrom group in rules with uucp/storage/optical group
+  sed -i -e 's#GROUP="dialout"#GROUP="uucp"#g;
+             s#GROUP="tape"#GROUP="storage"#g;
+             s#GROUP="cdrom"#GROUP="optical"#g' "$pkgdir"/usr/lib/udev/rules.d/*.rules
+
+  # add mkinitcpio hooks for udev
+  install -Dm644 "$srcdir/initcpio-install-udev" "$pkgdir/usr/lib/initcpio/install/udev"
+  install -Dm644 "$srcdir/initcpio-hooks-udev" "$pkgdir/usr/lib/initcpio/hooks/udev"
 }
