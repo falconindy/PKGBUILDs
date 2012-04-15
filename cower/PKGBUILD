@@ -1,7 +1,7 @@
 # Maintainer: Dave Reisner <d@falconindy.com>
 
 pkgname=cower
-pkgver=3.0.9
+pkgver=5
 pkgrel=1
 pkgdesc="A simple AUR agent with a pretentious name"
 arch=('i686' 'x86_64')
@@ -9,17 +9,11 @@ url="http://github.com/falconindy/cower"
 license=('MIT')
 depends=('curl' 'yajl' 'pacman')
 makedepends=('perl')
-source=("https://github.com/downloads/falconindy/$pkgname/$pkgname-$pkgver.tar.gz"
-        "backports.patch")
-md5sums=('07b9ca1a70e6f5718d9a921c1b8ba775'
-         'd43bea49b7a7e9d2ecf0f440e4d3bb6f')
+source=("https://github.com/downloads/falconindy/$pkgname/$pkgname-$pkgver.tar.gz")
+md5sums=('9db2a09c7f828d6eeb436a534ae17311')
 
 build() {
-  cd "$pkgname-$pkgver"
-
-  patch -Np1 <"$srcdir/backports.patch"
-
-  make
+  make -C "$pkgname-$pkgver"
 }
 
 package() {
