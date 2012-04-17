@@ -1,13 +1,13 @@
 # Maintainer: Dave Reisner <dreisner@archlinux.org>
 
 pkgname=systemd-git
-pkgver=20120404
-pkgrel=2
+pkgver=20120416
+pkgrel=1
 pkgdesc="system and service manager"
 arch=('i686' 'x86_64')
 url="http://www.freedesktop.org/wiki/Software/systemd"
-license=('GPL2')
-depends=('acl' 'dbus' 'dbus-core' 'kbd' 'kmod' 'libcap' 'pam' 'udev' 'util-linux' 'xz')
+license=('GPL2' 'LGPL2.1' 'MIT')
+depends=('acl' 'dbus-core' 'kbd' 'kmod' 'libcap' 'pam' 'util-linux' 'xz')
 makedepends=('cryptsetup' 'docbook-xsl' 'git' 'gobject-introspection' 'gperf'
              'gtk-doc' 'intltool' 'libxslt')
 optdepends=('cryptsetup: required for encrypted block devices'
@@ -34,13 +34,11 @@ install='systemd.install'
 source=('os-release'
         'initcpio-hooks-udev'
         'initcpio-install-udev'
-        0001-udev-support-reading-from-split-usr-setup.patch
-        0002-reinstate-TIMEOUT-handling.patch)
+        0001-udev-read-from-lib-udev-rules.d-for-compat.patch)
 md5sums=('752636def0db3c03f121f8b4f44a63cd'
          'a4dd853050bf2e0ae6b2e3d2c75499c2'
          'd2b16edc6d806b5dafdbbad43ae5a3de'
-         'b2f1827cfe9035df20b2a05550f35188'
-         'f6f942e0241b848763cad7bfd00f6757')
+         '5a743ccd6409581d8899a55ff40fd75d')
 
 _gitroot="git://anongit.freedesktop.org/systemd/systemd.git"
 _gitname="systemd"
@@ -62,17 +60,20 @@ build() {
   git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
   cd "$srcdir/$_gitname-build"
 
-  patch -Np1 <"$srcdir/0001-udev-support-reading-from-split-usr-setup.patch"
-  patch -Np1 <"$srcdir/0002-reinstate-TIMEOUT-handling.patch"
+  # allow udev to read from /lib and /usr/lib
+  patch -Np1 <"$srcdir/0001-udev-read-from-lib-udev-rules.d-for-compat.patch"
 
   ./autogen.sh
   ./configure --libexecdir=/usr/lib \
               --localstatedir=/var \
               --sysconfdir=/etc \
               --enable-split-usr \
+              --enable-introspection \
+              --enable-gtk-doc \
               --disable-audit \
               --with-pamlibdir=/lib/security \
               --with-distro=arch \
+              --with-firmware-path=/usr/lib/firmware/updates:/lib/firmware/updates:/usr/lib/firmware:/lib/firmware \
               --with-sysvinit-path= \
               --with-sysvrcd-path=
 
@@ -89,7 +90,7 @@ package() {
 
   # install external sd-{daemon,readahead} libraries
   install -m644 -t "$pkgdir/usr/share/doc/systemd" \
-    src/sd-daemon.[ch] \
+    src/systemd/sd-daemon.[ch] \
     src/readahead/sd-readahead.[ch]
 
   install -dm755 "$pkgdir/bin" "$pkgdir/lib/systemd"
@@ -123,6 +124,9 @@ package() {
   # the path to udevadm is hardcoded in some places
   install -d "$pkgdir/sbin"
   ln -s ../usr/bin/udevadm "$pkgdir/sbin/udevadm"
+
+  # udevd is no longer udevd because systemd.
+  ln -s ../systemd/systemd-udevd "$pkgdir/usr/lib/udev/udevd"
 
   # Replace dialout/tape/cdrom group in rules with uucp/storage/optical group
   sed -i -e 's#GROUP="dialout"#GROUP="uucp"#g;
