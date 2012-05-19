@@ -33,8 +33,7 @@ backup=(etc/dbus-1/system.d/org.freedesktop.systemd1.conf
 install='systemd.install'
 source=('os-release'
         'initcpio-hooks-udev'
-        'initcpio-install-udev'
-        0001-udev-read-from-lib-udev-rules.d-for-compat.patch)
+        'initcpio-install-udev')
 md5sums=('752636def0db3c03f121f8b4f44a63cd'
          'a4dd853050bf2e0ae6b2e3d2c75499c2'
          'd2b16edc6d806b5dafdbbad43ae5a3de'
@@ -60,9 +59,6 @@ build() {
   git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
   cd "$srcdir/$_gitname-build"
 
-  # allow udev to read from /lib and /usr/lib
-  patch -Np1 <"$srcdir/0001-udev-read-from-lib-udev-rules.d-for-compat.patch"
-
   ./autogen.sh
   ./configure --libexecdir=/usr/lib \
               --localstatedir=/var \
@@ -71,9 +67,10 @@ build() {
               --enable-introspection \
               --enable-gtk-doc \
               --disable-audit \
-              --with-pamlibdir=/lib/security \
+              --disable-ima \
+              --with-pamlibdir=/usr/lib/security \
               --with-distro=arch \
-              --with-firmware-path=/usr/lib/firmware/updates:/lib/firmware/updates:/usr/lib/firmware:/lib/firmware \
+              --with-firmware-path=/usr/lib/firmware/updates:/usr/lib/firmware \
               --with-sysvinit-path= \
               --with-sysvrcd-path=
 
@@ -93,9 +90,8 @@ package() {
     src/systemd/sd-daemon.[ch] \
     src/readahead/sd-readahead.[ch]
 
-  install -dm755 "$pkgdir/bin" "$pkgdir/lib/systemd"
+  install -dm755 "$pkgdir/bin"
   ln -s ../usr/lib/systemd/systemd "$pkgdir/bin/systemd"
-  ln -s ../../usr/lib/systemd/systemd "$pkgdir/lib/systemd/systemd"
 
   # fix systemd-analyze for python2
   sed -i '1s/python$/python2/' "$pkgdir/usr/bin/systemd-analyze"
@@ -114,6 +110,7 @@ package() {
     IFS='/' read section page <<< "$manpage"
     mv "$manpage" "$section/systemd.$page"
   done
+  sed -i '1s|/\([^/]\+\)|/systemd.\1|' "$pkgdir"/usr/share/man/man8/systemd.{poweroff,reboot}.8
 
   # move bash-completion and symlink for loginctl
   install -Dm644 "$pkgdir/etc/bash_completion.d/systemd-bash-completion.sh" \
