@@ -1,7 +1,7 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
 pkgname=util-linux-git
-pkgver=20120120
+pkgver=20120628
 pkgrel=1
 pkgdesc="Miscellaneous system utilities for Linux - the GIT version"
 url="http://userweb.kernel.org/~kzak/util-linux/"
@@ -9,11 +9,10 @@ arch=('i686' 'x86_64')
 license=('GPL2')
 depends=('zlib' 'udev' 'ncurses')
 makedepends=('git')
-provides=('util-linux-ng=2.21' 'util-linux=2.21')
-conflicts=('util-linux-ng' 'util-linux')
-replaces=('util-linux-ng')
+provides=('util-linux-ng=2.22' 'util-linux=2.22' 'eject')
+conflicts=('util-linux-ng' 'util-linux' 'eject')
+replaces=('util-linux-ng' 'eject')
 options=('!libtool')
-optdepends=('perl: for chkdupexe support')
 
 _gitroot="git://git.kernel.org/pub/scm/utils/util-linux/util-linux.git"
 _gitname="util-linux"
@@ -34,17 +33,20 @@ build() {
   git clone "$srcdir/$_gitname"{,-build}
   cd "$srcdir/$_gitname-build"
 
-  # alter location of adjtime file for FHS
-  sed -e 's@etc/adjtime@var/lib/hwclock/adjtime@' -i include/pathnames.h
-
   msg "Configuring..."
   ./autogen.sh
   ./configure \
+      --prefix=/usr \
+      --libdir=/usr/lib \
+      --disable-wall \
+      --disable-kill \
       --enable-write \
       --enable-raw \
-      --disable-wall \
+      --enable-fs-paths-extra="/usr/sbin:/usr/bin" \
       --enable-partx \
-      --enable-new-mount
+      --enable-chfn-chsh \
+      --enable-vipw \
+      --enable-newgrp
 
   msg "Starting make..."
   make
@@ -53,7 +55,13 @@ build() {
 package() {
   make -C "$_gitname-build" DESTDIR="$pkgdir" install
 
-  # create adjtime file's dir
-  install -dm755 "$pkgdir/var/lib/hwclock"
+  # enable setuid bit on chfn and chsh (should be fixed upstream)
+  chown 4755 "$pkgdir"/usr/bin/ch{sh,fn}
+
+  # get rid of su for now
+  rm "$pkgdir"/bin/su
+
+  # uncomment this line if you're using sysvinit
+  #rm "$pkgdir"/usr/share/man/man8/sulogin.8 "$pkgdir"/sbin/sulogin
 }
 
