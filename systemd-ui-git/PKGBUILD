@@ -8,7 +8,7 @@ arch=('i686' 'x86_64')
 url="http://www.freedesktop.org/wiki/Software/systemd"
 license=('GPL2')
 depends=('glib2' 'gtk2' 'libgee' 'libnotify' 'pango')
-makedepends=('vala' 'docbook-xsl' 'libxslt')
+makedepends=('git' 'vala' 'docbook-xsl' 'libxslt')
 provides=('systemd-ui')
 conflicts=('systemd-ui')
 
@@ -34,7 +34,7 @@ build() {
 
   # don't trigger ./configure automatically
   ./autogen.sh ac
-  ./configure --with-rootprefix=
+  ./configure
 
   make
 }
