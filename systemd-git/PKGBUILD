@@ -1,7 +1,7 @@
 # Maintainer: Dave Reisner <dreisner@archlinux.org>
 
 pkgname=systemd-git
-pkgver=20120604
+pkgver=20120730
 pkgrel=1
 pkgdesc="system and service manager"
 arch=('i686' 'x86_64')
@@ -9,13 +9,11 @@ url="http://www.freedesktop.org/wiki/Software/systemd"
 license=('GPL2' 'LGPL2.1' 'MIT')
 depends=('acl' 'dbus-core' 'glib2' 'hwids' 'kbd' 'kmod' 'libcap' 'pam' 'util-linux' 'xz')
 makedepends=('docbook-xsl' 'git' 'gobject-introspection' 'gperf'
-             'gtk-doc' 'intltool' 'libxslt')
+             'gtk-doc' 'intltool' 'libxslt' 'python2')
 optdepends=('cryptsetup: required for encrypted block devices'
-            'dbus-python: systemd-analyze'
-            'initscripts: legacy hostname, locale, and vconsole support'
-            'selinux-usr-libselinux: integration with security enhanced Linux'
-            'systemd-arch-units-git: collection of native unit files for Arch daemon/init scripts'
-            'tcp_wrappers: filter remote access to services')
+            'python-cairo: systemd-analyze'
+            'python-dbus: systemd-analyze'
+            'systemd-arch-units: collection of native unit files for Arch daemon/init scripts')
 provides=('systemd' 'libsystemd' 'systemd-sysvcompat' 'systemd-tools' 'udev=999')
 conflicts=('systemd' 'libsystemd' 'systemd-sysvcompat' 'systemd-tools' 'sysvinit' 'initscripts' 'udev')
 groups=('systemd')
@@ -31,11 +29,13 @@ backup=(etc/dbus-1/system.d/org.freedesktop.systemd1.conf
         etc/systemd/journald.conf
         etc/udev/udev.conf)
 install='systemd.install'
-source=('locale.sh'
+source=('use-split-usr-path.patch'
+        'locale.sh'
         'initcpio-hook-udev'
         'initcpio-install-udev'
         'initcpio-install-timestamp')
-md5sums=('f15956945052bb911e5df81cf5e7e5dc'
+md5sums=('482dba45a783f06c2239f1355f4ce72f'
+         'f15956945052bb911e5df81cf5e7e5dc'
          'e99e9189aa2f6084ac28b8ddf605aeb8'
          '59e91c4d7a69b7bf12c86a9982e37ced'
          'df69615503ad293c9ddf9d8b7755282d')
@@ -50,7 +50,7 @@ build() {
     cd $_gitname && git pull origin
     msg "The local files are updated."
   else
-    git clone $_gitroot $_gitname
+    git clone "$_gitroot" "$_gitname"
   fi
 
   msg "GIT checkout done or server timeout"
@@ -60,12 +60,14 @@ build() {
   git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
   cd "$srcdir/$_gitname-build"
 
+  patch -Np1 <"$srcdir/use-split-usr-path.patch"
+
   ./autogen.sh
   ./configure \
+      PYTHON=python2 \
       --libexecdir=/usr/lib \
       --localstatedir=/var \
       --sysconfdir=/etc \
-      --enable-split-usr \
       --enable-introspection \
       --enable-gtk-doc \
       --disable-audit \
@@ -89,7 +91,6 @@ package() {
   # compat symlinks
   install -dm755 "$pkgdir"/{,s}bin
   ln -s ../usr/lib/systemd/systemd "$pkgdir/bin/systemd"
-  ln -s ../usr/bin/udevadm "$pkgdir/sbin/udevadm"
 
   install -dm755 "$pkgdir/sbin"
   for tool in runlevel reboot shutdown poweroff halt telinit; do
@@ -99,9 +100,6 @@ package() {
 
   # systemd-wide user locale
   install -Dm755 "$srcdir/locale.sh" "$pkgdir/etc/profile.d/locale.sh"
-
-  # fix systemd-analyze for python2
-  sed -i '1s/python$/python2/' "$pkgdir/usr/bin/systemd-analyze"
 
   # fix .so links in manpage stubs
   find "$pkgdir/usr/share/man" -type f -name '*.[[:digit:]]' \
