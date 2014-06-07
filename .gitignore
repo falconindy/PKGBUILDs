@@ -1,5 +1,5 @@
-*/src
-*/pkg
+src/
+pkg/
 *.gz
 *.xz
 *.bz2
