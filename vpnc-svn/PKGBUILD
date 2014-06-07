@@ -22,6 +22,11 @@ _svnmod=vpnc
 build() {
   cd "$srcdir"
 
+  # TODO: for pacman 4.1, add this to the source array with SKIP
+  curl -Lf --compressed \
+    'http://git.infradead.org/users/dwmw2/vpnc-scripts.git/blob_plain/HEAD:/vpnc-script' \
+    > vpnc-script
+
   if [[ -d $_svnmod/.svn ]]; then
     cd $_svnmod && svn up
   else
