@@ -1,0 +1,61 @@
+# Maintainer: Dave Reisner <d@falconindy.com>
+
+pkgname=spdylay
+pkgver=1.2.3
+pkgrel=2
+pkgdesc="An experimental implementation of Google’s SPDY protocol"
+arch=('i686' 'x86_64')
+url="http://tatsuhiro-t.github.io/spdylay/"
+license=('MIT')
+depends=('gcc-libs' 'glibc' 'libevent' 'libxml2' 'openssl' 'zlib')
+# makedepends=('python-sphinx')
+checkdepends=('cunit')
+provides=('libspdylay.so')
+options=('!libtool')
+source=("https://github.com/tatsuhiro-t/spdylay/releases/download/v$pkgver/spdylay-$pkgver.tar.xz")
+md5sums=('1e6ee97024101fd7681792f06dd125f4')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+
+  # can't currently (sanely) build documentation locally due to python mess.
+  # online docs available at: http://tatsuhiro-t.github.io/spdylay/
+  # TODO: this is a hack which may someday fail. fix it properly upstream.
+  2to3 -w --no-diffs doc/mkapiref.py
+
+  # 2to3 can't handle all of the conversion here, so take the lame route
+  # and enforce a python2 interpreter in the shebang
+  sed -i '1s/python$/python2/' tests/end_to_end.py
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+
+  ./configure --prefix=/usr
+
+  make
+
+  # requires: https://github.com/snide/sphinx_rtd_theme
+  # make html
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+
+  make check
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+
+  make DESTDIR="$pkgdir" install
+
+  # add MIT license
+  install -Dm644 COPYING "$pkgdir/usr/share/licenses/spdylay/COPYING"
+
+  # drop in wholesale generated documentation
+  # install -dm755 "$pkgdir/usr/share/doc"
+  # cp -dr --no-preserve=ownership "doc/manual" "$pkgdir/usr/share/doc/spdylay"
+}
+
+# vim: ft=sh syn=sh et
