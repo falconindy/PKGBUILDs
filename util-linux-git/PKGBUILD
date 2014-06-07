@@ -1,67 +1,84 @@
 # Contributor: Dave Reisner <d@falconindy.com>
 
 pkgname=util-linux-git
-pkgver=20120628
+pkgver=2.24.264.g2f79154
 pkgrel=1
 pkgdesc="Miscellaneous system utilities for Linux - the GIT version"
 url="http://userweb.kernel.org/~kzak/util-linux/"
 arch=('i686' 'x86_64')
 license=('GPL2')
-depends=('zlib' 'udev' 'ncurses')
+depends=('ncurses' 'pam' 'systemd' 'shadow' 'zlib')
 makedepends=('git')
-provides=('util-linux-ng=2.22' 'util-linux=2.22' 'eject')
-conflicts=('util-linux-ng' 'util-linux' 'eject')
-replaces=('util-linux-ng' 'eject')
+provides=("util-linux=$pkgver" "util-linux-ng=$pkgver" "libutil-linux=$pkgver" 'eject')
+conflicts=('util-linux' 'eject')
+replaces=('eject')
 options=('!libtool')
+source=('git://git.kernel.org/pub/scm/utils/util-linux/util-linux.git'
+        'pam-su'
+        'pam-login'
+        'pam-chfn-chsh'
+        'uuidd.tmpfiles')
+install='util-linux.install'
+md5sums=('SKIP'
+         'fa85e5cce5d723275b14365ba71a8aad'
+         '4368b3f98abd8a32662e094c54e7f9b1'
+         'a31374fef2cba0ca34dfc7078e2969e4'
+         'a39554bfd65cccfd8254bb46922f4a67')
 
 _gitroot="git://git.kernel.org/pub/scm/utils/util-linux/util-linux.git"
 _gitname="util-linux"
 
+pkgver() {
+  cd util-linux
+
+  git describe | sed 's/^v//;s/-/./g'
+}
+
 build() {
-  msg "Connecting to GIT server...."
+  cd util-linux
 
-  if [[ -d $_gitname ]] ; then
-    cd "$_gitname" && git pull origin
-    msg "The local files are updated."
-  else
-    git clone $_gitroot $_gitname
-  fi
-
-  msg "GIT checkout done or server timeout"
-
-  rm -rf "$srcdir/$_gitname-build"
-  git clone "$srcdir/$_gitname"{,-build}
-  cd "$srcdir/$_gitname-build"
-
-  msg "Configuring..."
   ./autogen.sh
   ./configure \
+      PYTHON=/usr/bin/python2 \
+      --localstatedir=/run \
       --prefix=/usr \
       --libdir=/usr/lib \
+      --bindir=/usr/bin \
+      --sbindir=/usr/bin \
       --disable-wall \
-      --disable-kill \
+      --enable-kill \
       --enable-write \
       --enable-raw \
       --enable-fs-paths-extra="/usr/sbin:/usr/bin" \
       --enable-partx \
       --enable-chfn-chsh \
       --enable-vipw \
-      --enable-newgrp
+      --enable-newgrp \
+      --enable-runuser \
+      --enable-socket-activation \
+      --disable-sulogin-emergency-mount \
+      --without-user
 
-  msg "Starting make..."
+  sed -i '/^usrsbin_execdir = / s|/sbin|/bin|' Makefile
+
   make
 }
 
 package() {
-  make -C "$_gitname-build" DESTDIR="$pkgdir" install
+  make -C 'util-linux' DESTDIR="$pkgdir" install
 
-  # enable setuid bit on chfn and chsh (should be fixed upstream)
-  chown 4755 "$pkgdir"/usr/bin/ch{sh,fn}
+  # enable setuid bit on various progs
+  chmod 4755 "$pkgdir"/usr/bin/{ch{sh,fn},newgrp}
 
-  # get rid of su for now
-  rm "$pkgdir"/bin/su
+  # PAM
+  install -dm755 "$pkgdir/etc/pam.d"
+  install -m644 "$srcdir/pam-chfn-chsh" "$pkgdir/etc/pam.d/chfn"
+  install -m644 "$srcdir/pam-chfn-chsh" "$pkgdir/etc/pam.d/chsh"
+  install -m644 "$srcdir/pam-login" "$pkgdir/etc/pam.d/login"
+  install -m644 "$srcdir/pam-su" "$pkgdir/etc/pam.d/su"
+  install -m644 "$srcdir/pam-su" "$pkgdir/etc/pam.d/su-l"
 
-  # uncomment this line if you're using sysvinit
-  #rm "$pkgdir"/usr/share/man/man8/sulogin.8 "$pkgdir"/sbin/sulogin
+  # tmpfiles
+  install -Dm644 "$srcdir/uuidd.tmpfiles" "$pkgdir/usr/lib/tmpfiles.d/uuidd.conf"
 }
 
